@@ -68,6 +68,37 @@ public class ChessPiece {
                 break;
 
             case BISHOP:
+                int[][] directions = {
+                        {-1, -1}, // top-left
+                        {-1, 1},  // top-right
+                        {1, -1},  // bottom-left
+                        {1, 1}    // bottom-right
+                };
+                for (int[] direction : directions) {
+                    int rowChange = direction[0];
+                    int colChange = direction[1];
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
+
+                    while (true) {
+                        row += rowChange;
+                        col += colChange;
+
+                        if (!isValidPosition(row, col)) break;
+
+                        ChessPosition newPosition = new ChessPosition(row, col);
+                        ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+
+                        if (pieceAtNewPosition == null) {
+                            validMoves.add(new ChessMove(myPosition, newPosition, null));
+                        } else if (pieceAtNewPosition.getTeamColor() != this.getTeamColor()) {
+                            validMoves.add(new ChessMove(myPosition, newPosition, null)); // Capture move
+                            break;
+                        } else {
+                            break; // Blocked by friendly piece
+                        }
+                    }
+                }
                 break;
 
             case KNIGHT:
