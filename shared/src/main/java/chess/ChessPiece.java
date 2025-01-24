@@ -54,7 +54,38 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        switch (this.getPieceType()) {
+            case KING:
+                break;
+
+            case QUEEN:
+                // Moves like a rook or a bishop, can combine code
+                break;
+
+            case ROOK:
+                break;
+
+            case BISHOP:
+                break;
+
+            case KNIGHT:
+                break;
+
+            case PAWN:
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unsupported piece type: " + this.getPieceType());
+        }
+
+        return validMoves;
+    }
+
+    // Helper method to check if a position is valid on the chessboard
+    private boolean isValidPosition(int row, int col) {
+        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 
     @Override
