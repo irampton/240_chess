@@ -58,6 +58,24 @@ public class ChessPiece {
 
         switch (this.getPieceType()) {
             case KING:
+                for (int rowOffset = -1; rowOffset <= 1; rowOffset++) {
+                    for (int colOffset = -1; colOffset <= 1; colOffset++) {
+                        if (rowOffset == 0 && colOffset == 0){
+                            continue;
+                        }
+
+                        int newRow = myPosition.getRow() + rowOffset;
+                        int newCol = myPosition.getColumn() + colOffset;
+                        if (isValidPosition(newRow, newCol)) {
+                            ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                            ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+                            if (pieceAtNewPosition == null || pieceAtNewPosition.getTeamColor() != this.getTeamColor()) {
+                                validMoves.add(new ChessMove(myPosition, newPosition, null));
+                            }
+                        }
+                    }
+                }
+
                 break;
 
             case QUEEN:
