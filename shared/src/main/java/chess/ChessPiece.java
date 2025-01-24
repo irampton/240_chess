@@ -80,43 +80,18 @@ public class ChessPiece {
 
             case QUEEN:
                 // Moves like a rook or a bishop, can combine code
+                addRookMoves(board, myPosition, validMoves);
+                addBishopMoves(board, myPosition, validMoves);
                 break;
 
             case ROOK:
+                // Rook moves vertically or horizontally
+                addRookMoves(board, myPosition, validMoves);
                 break;
 
             case BISHOP:
-                int[][] directions = {
-                        {-1, -1}, // top-left
-                        {-1, 1},  // top-right
-                        {1, -1},  // bottom-left
-                        {1, 1}    // bottom-right
-                };
-                for (int[] direction : directions) {
-                    int rowChange = direction[0];
-                    int colChange = direction[1];
-                    int row = myPosition.getRow();
-                    int col = myPosition.getColumn();
-
-                    while (true) {
-                        row += rowChange;
-                        col += colChange;
-
-                        if (!isValidPosition(row, col)) break;
-
-                        ChessPosition newPosition = new ChessPosition(row, col);
-                        ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
-
-                        if (pieceAtNewPosition == null) {
-                            validMoves.add(new ChessMove(myPosition, newPosition, null));
-                        } else if (pieceAtNewPosition.getTeamColor() != this.getTeamColor()) {
-                            validMoves.add(new ChessMove(myPosition, newPosition, null)); // Capture move
-                            break;
-                        } else {
-                            break; // Blocked by friendly piece
-                        }
-                    }
-                }
+                // Bishop moves diagonally
+                addBishopMoves(board, myPosition, validMoves);
                 break;
 
             case KNIGHT:
@@ -151,6 +126,76 @@ public class ChessPiece {
     private boolean isValidPosition(int row, int col) {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
+
+
+    private void addRookMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves) {
+        int[][] directions = {
+                {-1, 0}, // up
+                {1, 0},  // down
+                {0, -1}, // left
+                {0, 1}   // right
+        };
+        for (int[] direction : directions) {
+            int rowChange = direction[0];
+            int colChange = direction[1];
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            while (true) {
+                row += rowChange;
+                col += colChange;
+
+                if (!isValidPosition(row, col)) break;
+
+                ChessPosition newPosition = new ChessPosition(row, col);
+                ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+
+                if (pieceAtNewPosition == null) {
+                    validMoves.add(new ChessMove(myPosition, newPosition, null));
+                } else if (pieceAtNewPosition.getTeamColor() != this.getTeamColor()) {
+                    validMoves.add(new ChessMove(myPosition, newPosition, null)); // Capture move
+                    break;
+                } else {
+                    break; // Blocked by friendly piece
+                }
+            }
+        }
+    }
+
+    private void addBishopMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves) {
+        int[][] directions = {
+                {-1, -1}, // top-left
+                {-1, 1},  // top-right
+                {1, -1},  // bottom-left
+                {1, 1}    // bottom-right
+        };
+        for (int[] direction : directions) {
+            int rowChange = direction[0];
+            int colChange = direction[1];
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            while (true) {
+                row += rowChange;
+                col += colChange;
+
+                if (!isValidPosition(row, col)) break;
+
+                ChessPosition newPosition = new ChessPosition(row, col);
+                ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+
+                if (pieceAtNewPosition == null) {
+                    validMoves.add(new ChessMove(myPosition, newPosition, null));
+                } else if (pieceAtNewPosition.getTeamColor() != this.getTeamColor()) {
+                    validMoves.add(new ChessMove(myPosition, newPosition, null)); // Capture move
+                    break;
+                } else {
+                    break; // Blocked by friendly piece
+                }
+            }
+        }
+    }
+
 
     @Override
     public boolean equals(Object o) {
