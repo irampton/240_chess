@@ -60,7 +60,7 @@ public class ChessPiece {
             case KING:
                 for (int rowOffset = -1; rowOffset <= 1; rowOffset++) {
                     for (int colOffset = -1; colOffset <= 1; colOffset++) {
-                        if (rowOffset == 0 && colOffset == 0){
+                        if (rowOffset == 0 && colOffset == 0) {
                             continue;
                         }
 
@@ -113,6 +113,42 @@ public class ChessPiece {
                 break;
 
             case PAWN:
+                int[][] pawnCaptures = {
+                        {this.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1, 0},
+                        {this.getTeamColor() == ChessGame.TeamColor.WHITE ? 2 : -2, 0},
+                        {this.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1, -1},
+                        {this.getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1, 1}
+                };
+                for (int[] move : pawnCaptures) {
+                    int newRow = myPosition.getRow() + move[0];
+                    int newCol = myPosition.getColumn() + move[1];
+                    if (isValidPosition(newRow, newCol)) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+
+                        // Skip double move if not on starting row, or a piece blocks it
+                        if ((move[0] == 2 && myPosition.getRow() != 2)
+                                || (move[0] == -2 && myPosition.getRow() != 7)
+                                || (move[0] == 2 && board.getPiece(new ChessPosition(newRow - 1, newCol)) != null)
+                                || (move[0] == -2 && board.getPiece(new ChessPosition(newRow + 1, newCol)) != null)) {
+                            continue;
+                        }
+
+                        if (move[1] == 0
+                                ? (pieceAtNewPosition == null)
+                                : (pieceAtNewPosition != null && pieceAtNewPosition.getTeamColor() != this.getTeamColor())) {
+                            if (newPosition.getRow() == (this.getTeamColor() == ChessGame.TeamColor.WHITE ? 8 : 1)) {
+                                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+                                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+                                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+                                validMoves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+                            } else {
+                                validMoves.add(new ChessMove(myPosition, newPosition, null));
+                            }
+                        }
+
+                    }
+                }
                 break;
 
             default:
@@ -126,7 +162,6 @@ public class ChessPiece {
     private boolean isValidPosition(int row, int col) {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
-
 
     private void addRookMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves) {
         int[][] directions = {
@@ -145,7 +180,9 @@ public class ChessPiece {
                 row += rowChange;
                 col += colChange;
 
-                if (!isValidPosition(row, col)) break;
+                if (!isValidPosition(row, col)) {
+                    break;
+                }
 
                 ChessPosition newPosition = new ChessPosition(row, col);
                 ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
@@ -179,7 +216,9 @@ public class ChessPiece {
                 row += rowChange;
                 col += colChange;
 
-                if (!isValidPosition(row, col)) break;
+                if (!isValidPosition(row, col)) {
+                    break;
+                }
 
                 ChessPosition newPosition = new ChessPosition(row, col);
                 ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
