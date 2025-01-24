@@ -120,6 +120,21 @@ public class ChessPiece {
                 break;
 
             case KNIGHT:
+                int[][] knightMoves = {
+                        {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
+                        {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
+                };
+                for (int[] move : knightMoves) {
+                    int newRow = myPosition.getRow() + move[0];
+                    int newCol = myPosition.getColumn() + move[1];
+                    if (isValidPosition(newRow, newCol)) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessPiece pieceAtNewPosition = board.getPiece(newPosition);
+                        if (pieceAtNewPosition == null || pieceAtNewPosition.getTeamColor() != this.getTeamColor()) {
+                            validMoves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                    }
+                }
                 break;
 
             case PAWN:
