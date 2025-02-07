@@ -96,7 +96,28 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return Objects.equals(board, that.board);
+
+        // Iterate through all 8 rows and 8 columns to check the pieces
+        for (int row = 8; row >= 1; row--) {
+            for (int column = 1; column <= 8; column++) {
+                ChessPosition position = new ChessPosition(row, column);
+                ChessPiece thisPiece = this.getPiece(position);
+                ChessPiece thatPiece = that.getPiece(position);
+
+                if (thisPiece == null && thatPiece != null || thisPiece != null && thatPiece == null) {
+                    return false;
+                }
+                if (thisPiece != null && thatPiece != null) {
+                    if (thisPiece.getPieceType() != thatPiece.getPieceType() ||
+                            thisPiece.getTeamColor() != thatPiece.getTeamColor()) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // If all checks pass, the boards are equal
+        return true;
     }
 
     @Override
