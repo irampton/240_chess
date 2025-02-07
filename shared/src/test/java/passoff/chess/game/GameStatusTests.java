@@ -23,7 +23,7 @@ public class GameStatusTests {
     public void newGame() {
         var game = new ChessGame();
         var expectedBoard = TestUtilities.defaultBoard();
-        Assertions.assertEquals(expectedBoard, game.getChessBoard(), "Incorrect starting board");
+        Assertions.assertEquals(expectedBoard, game.getBoard(), "Incorrect starting board");
         Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getTeamTurn(), "Incorrect starting team turn");
     }
 
@@ -31,7 +31,7 @@ public class GameStatusTests {
     @DisplayName("Default Board No Statuses")
     public void noGameStatuses() {
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.defaultBoard());
+        game.setBoard(TestUtilities.defaultBoard());
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         Assertions.assertFalse(game.isInCheck(ChessGame.TeamColor.BLACK), INCORRECT_BLACK_CHECK);
@@ -47,7 +47,7 @@ public class GameStatusTests {
     @DisplayName("White in Check")
     public void whiteCheck() {
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | |k|
                 | | | | | | | | |
                 | | | | | | | | |
@@ -67,7 +67,7 @@ public class GameStatusTests {
     @DisplayName("Black in Check")
     public void blackCheck() {
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | |K| | | | |
                 | | | | | | | | |
                 | | | |k| | | | |
@@ -89,7 +89,7 @@ public class GameStatusTests {
     public void whiteTeamCheckmate() {
 
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | |b|q| | | | |
                 | | | | | | | | |
@@ -110,7 +110,7 @@ public class GameStatusTests {
     @DisplayName("Black in Checkmate by Pawns")
     public void blackTeamPawnCheckmate() {
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | |k| | | | |
                 | | | |P|P| | | |
                 | |P| | |P|P| | |
@@ -132,7 +132,7 @@ public class GameStatusTests {
     public void escapeCheckByCapturingThreateningPiece() {
 
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | |r|k| |
                 | | | | | |P| |p|
                 | | | |N| | | | |
@@ -154,7 +154,7 @@ public class GameStatusTests {
     public void cannotEscapeCheckByCapturingThreateningPiece() {
 
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | |r|k| |
                 | | | | | |P| |p|
                 | | | |N| | | | |
@@ -176,7 +176,7 @@ public class GameStatusTests {
     public void checkmateWhereBlockingThreateningPieceOpensNewThreat() {
 
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | |r|k|
                 | | |R| | | | | |
                 | | | | | | | | |
@@ -197,7 +197,7 @@ public class GameStatusTests {
     @DisplayName("Pinned King Causes Stalemate")
     public void stalemate() {
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 |k| | | | | | | |
                 | | | | | | | |r|
                 | | | | | | | | |
@@ -217,7 +217,7 @@ public class GameStatusTests {
     @DisplayName("Stalemate Requires not in Check")
     public void checkmateNotStalemate() {
         var game = new ChessGame();
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 |k| | | | | | | |
                 | | | | | | | | |
                 | | | | | | | | |

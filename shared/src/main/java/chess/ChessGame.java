@@ -206,7 +206,7 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setChessBoard(ChessBoard board) {
+    public void setBoard(ChessBoard board) {
         chessBoard = board;
     }
 
@@ -215,7 +215,7 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard getChessBoard() {
+    public ChessBoard getBoard() {
         return chessBoard;
     }
 

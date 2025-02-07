@@ -17,13 +17,13 @@ public class MakeMoveTests {
     public void setUp() {
         game = new ChessGame();
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
-        game.setChessBoard(TestUtilities.defaultBoard());
+        game.setBoard(TestUtilities.defaultBoard());
     }
 
     @Test
     @DisplayName("Make Valid King Move")
     public void makeValidKingMove() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | | |
                 |p| | | | | | |k|
                 | | | | | | | | |
@@ -48,13 +48,13 @@ public class MakeMoveTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |K| | | | | | | |
-                """), game.getChessBoard(), WRONG_BOARD);
+                """), game.getBoard(), WRONG_BOARD);
     }
 
     @Test
     @DisplayName("Make Valid Queen Move")
     public void makeValidQueenMove() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | | | |q| |
@@ -79,13 +79,13 @@ public class MakeMoveTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |K|q|k| | | | | |
-                """), game.getChessBoard(), WRONG_BOARD);
+                """), game.getBoard(), WRONG_BOARD);
     }
 
     @Test
     @DisplayName("Make Valid Rook Move")
     public void makeValidRookMove() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -110,13 +110,13 @@ public class MakeMoveTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |K| | | | | | | |
-                """), game.getChessBoard(), WRONG_BOARD);
+                """), game.getBoard(), WRONG_BOARD);
     }
 
     @Test
     @DisplayName("Make Valid Knight Move")
     public void makeValidKnightMove() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
                 | | |n| | | | | |
@@ -141,13 +141,13 @@ public class MakeMoveTests {
                 | | | | | | | | |
                 | | | | | | | |P|
                 | | | | |K| | | |
-                """), game.getChessBoard(), WRONG_BOARD);
+                """), game.getBoard(), WRONG_BOARD);
     }
 
     @Test
     @DisplayName("Make Valid Bishop Move")
     public void makeValidBishopMove() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 |p| | | | | | | |
                 | | | | | | | | |
@@ -172,13 +172,13 @@ public class MakeMoveTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | | | |K| | | |
-                """), game.getChessBoard(), WRONG_BOARD);
+                """), game.getBoard(), WRONG_BOARD);
     }
 
     @Test
     @DisplayName("Make Valid Pawn Move")
     public void makeValidPawnMove() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | |k| | | | | | |
                 | |p| | | | | | |
                 | | | | | | | | |
@@ -203,7 +203,7 @@ public class MakeMoveTests {
                 | | | | | | | | |
                 | | | | | | |P| |
                 | | | | | | |K| |
-                """), game.getChessBoard(), WRONG_BOARD);
+                """), game.getBoard(), WRONG_BOARD);
     }
 
     @Test
@@ -272,7 +272,7 @@ public class MakeMoveTests {
     @Test
     @DisplayName("Invalid Make Move Captured Piece")
     public void invalidMakeMoveCapturedPiece() throws InvalidMoveException {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 |r|n|b|q|k|b|n|r|
                 |p|p|p|p| |p|p|p|
                 | | | | | | | | |
@@ -291,7 +291,7 @@ public class MakeMoveTests {
     @Test
     @DisplayName("Invalid Make Move Jump Enemy")
     public void invalidMakeMoveJumpEnemy() {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | |k| | | |
                 | | | | | | | | |
                 | | | | | | | | |
@@ -308,7 +308,7 @@ public class MakeMoveTests {
     @Test
     @DisplayName("Invalid Make Move In Check")
     public void invalidMakeMoveInCheck() {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 |r|n| |q|k|b| |r|
                 |p| |p|p|p|p|p|p|
                 |b|p| | | | | | |
@@ -326,7 +326,7 @@ public class MakeMoveTests {
     @Test
     @DisplayName("Invalid Make Move Double Move Moved Pawn")
     public void invalidMakeMoveDoubleMoveMovedPawn() {
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 |r|n|b|q|k|b|n|r|
                 |p| |p|p|p|p|p|p|
                 | | | | | | | | |
@@ -350,7 +350,7 @@ public class MakeMoveTests {
         String incorrectType = "Found piece at end position is not the correct piece type";
         String incorrectColor = "Found piece at end position is the wrong team color";
 
-        game.setChessBoard(TestUtilities.loadBoard("""
+        game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | |P| | | | | |
                 | | | | | | |k| |
@@ -365,8 +365,8 @@ public class MakeMoveTests {
         ChessMove whitePromotion = new ChessMove(new ChessPosition(7, 3), new ChessPosition(8, 3), promotionType);
         game.makeMove(whitePromotion);
 
-        Assertions.assertNull(game.getChessBoard().getPiece(whitePromotion.getStartPosition()), pieceAtStart);
-        ChessPiece whiteEndPiece = game.getChessBoard().getPiece(whitePromotion.getEndPosition());
+        Assertions.assertNull(game.getBoard().getPiece(whitePromotion.getStartPosition()), pieceAtStart);
+        ChessPiece whiteEndPiece = game.getBoard().getPiece(whitePromotion.getEndPosition());
         Assertions.assertNotNull(whiteEndPiece, noPieceAtEnd);
         Assertions.assertEquals(promotionType, whiteEndPiece.getPieceType(), incorrectType);
         Assertions.assertEquals(ChessGame.TeamColor.WHITE, whiteEndPiece.getTeamColor(), incorrectColor);
@@ -377,8 +377,8 @@ public class MakeMoveTests {
         ChessMove blackPromotion = new ChessMove(new ChessPosition(2, 5), new ChessPosition(1, 6), promotionType);
         game.makeMove(blackPromotion);
 
-        Assertions.assertNull(game.getChessBoard().getPiece(blackPromotion.getStartPosition()), pieceAtStart);
-        ChessPiece blackEndPiece = game.getChessBoard().getPiece(blackPromotion.getEndPosition());
+        Assertions.assertNull(game.getBoard().getPiece(blackPromotion.getStartPosition()), pieceAtStart);
+        ChessPiece blackEndPiece = game.getBoard().getPiece(blackPromotion.getEndPosition());
         Assertions.assertNotNull(blackEndPiece, noPieceAtEnd);
         Assertions.assertEquals(promotionType, blackEndPiece.getPieceType(), incorrectType);
         Assertions.assertEquals(ChessGame.TeamColor.BLACK, blackEndPiece.getTeamColor(), incorrectColor);
