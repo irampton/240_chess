@@ -103,4 +103,24 @@ public class ChessBoard {
     public int hashCode() {
         return Objects.hashCode(board);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        for (int row = 8; row >= 1; row--) {
+            for (int column = 1; column <= 8; column++) {
+                ChessPosition position = new ChessPosition(row, column);
+                ChessPiece piece = getPiece(position);
+
+                if (piece == null) {
+                    sb.append("| ");
+                } else {
+                    sb.append("|").append(piece.getPieceType().toString().charAt(0));
+                }
+            }
+            sb.append("|\n");
+        }
+        return sb.toString();
+    }
 }
