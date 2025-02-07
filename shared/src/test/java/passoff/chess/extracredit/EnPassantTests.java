@@ -191,7 +191,7 @@ public class EnPassantTests {
                 | | | |K| | | | |
                 """);
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         //move black piece 2 spaces
@@ -231,7 +231,7 @@ public class EnPassantTests {
     private void assertValidEnPassant(ChessBoard board, ChessGame.TeamColor turn, ChessMove setupMove,
                                       ChessMove enPassantMove, ChessBoard endBoard) throws InvalidMoveException {
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(turn);
 
         //setup prior move for en passant
@@ -243,7 +243,7 @@ public class EnPassantTests {
 
         //en passant move works correctly
         Assertions.assertDoesNotThrow(() -> game.makeMove(enPassantMove));
-        Assertions.assertEquals(endBoard, game.getBoard(), "Incorrect Board after En Passant Move");
+        Assertions.assertEquals(endBoard, game.getChessBoard(), "Incorrect Board after En Passant Move");
     }
 
 }

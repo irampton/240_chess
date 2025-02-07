@@ -20,7 +20,7 @@ public class ValidMovesTests {
 
         var game = new ChessGame();
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
-        game.setBoard(TestUtilities.loadBoard("""
+        game.setChessBoard(TestUtilities.loadBoard("""
                     | | | | | | | | |
                     | | | | | | | | |
                     | |B| | | | | | |
@@ -48,7 +48,7 @@ public class ValidMovesTests {
     public void moveIntoCheck() {
 
         var game = new ChessGame();
-        game.setBoard(TestUtilities.loadBoard("""
+        game.setChessBoard(TestUtilities.loadBoard("""
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
@@ -72,7 +72,7 @@ public class ValidMovesTests {
     public void rookPinnedToKing() {
 
         var game = new ChessGame();
-        game.setBoard(TestUtilities.loadBoard("""
+        game.setChessBoard(TestUtilities.loadBoard("""
                     |K| | | | | | |Q|
                     | | | | | | | | |
                     | | | | | | | | |
@@ -94,7 +94,7 @@ public class ValidMovesTests {
 
         var game = new ChessGame();
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
-        game.setBoard(TestUtilities.loadBoard("""
+        game.setChessBoard(TestUtilities.loadBoard("""
                     |R| | | | | | | |
                     | | | |k| | | |b|
                     | | | | |P| | | |
@@ -132,7 +132,7 @@ public class ValidMovesTests {
     public void noPutSelfInDanger() {
 
         var game = new ChessGame();
-        game.setBoard(TestUtilities.loadBoard("""
+        game.setChessBoard(TestUtilities.loadBoard("""
                     | | | | | | | | |
                     | | | | | | | | |
                     | | | | | | | | |
@@ -154,7 +154,7 @@ public class ValidMovesTests {
     @DisplayName("Valid Moves Independent of Team Turn")
     public void validMovesOtherTeam() {
         var game = new ChessGame();
-        game.setBoard(TestUtilities.defaultBoard());
+        game.setChessBoard(TestUtilities.defaultBoard());
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         ChessPosition position = new ChessPosition(2, 5);

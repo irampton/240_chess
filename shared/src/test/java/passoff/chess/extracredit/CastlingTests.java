@@ -33,7 +33,7 @@ public class CastlingTests {
                 |R| | | |K| | |R|
                 """);
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         //check that with nothing in way, king can castle
@@ -55,7 +55,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 | | |K|R| | | |R|
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game.getChessBoard(), INCORRECT_BOARD);
 
         //reset board
         board = TestUtilities.loadBoard("""
@@ -68,7 +68,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 |R| | | |K| | |R|
                 """);
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         //king side castle works correctly
@@ -82,7 +82,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | | | | | |
                 |R| | | | |R|K| |
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game.getChessBoard(), INCORRECT_BOARD);
     }
 
 
@@ -100,7 +100,7 @@ public class CastlingTests {
                 |R| | | | | | | |
                 """);
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         //check that with nothing in way, king can castle
@@ -122,7 +122,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | |K| | | |
                 |R| | | | | | | |
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game.getChessBoard(), INCORRECT_BOARD);
 
 
         //reset board
@@ -136,7 +136,7 @@ public class CastlingTests {
                 | | | | |K| | | |
                 |R| | | | | | | |
                 """);
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         //king side castle works correctly
@@ -150,7 +150,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 | | | | |K| | | |
                 |R| | | | | | | |
-                """), game.getBoard(), INCORRECT_BOARD);
+                """), game.getChessBoard(), INCORRECT_BOARD);
     }
 
 
@@ -168,7 +168,7 @@ public class CastlingTests {
                 |R| |B| |K| |Q|R|
                 """);
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         //check that with nothing in way, king can castle
@@ -196,7 +196,7 @@ public class CastlingTests {
                 | | | | | | | | |
                 """);
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
 
         //make sure king cannot castle on either side
         ChessPosition kingPosition = new ChessPosition(8, 5);
@@ -221,7 +221,7 @@ public class CastlingTests {
                 |R| | | |K| | |R|
                 """);
         ChessGame game = new ChessGame();
-        game.setBoard(board);
+        game.setChessBoard(board);
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         //move left rook
