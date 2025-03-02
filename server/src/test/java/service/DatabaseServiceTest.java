@@ -26,7 +26,7 @@ public class DatabaseServiceTest {
     // Positive Test Case: All DAO clear methods succeed
     @Test
     @Order(1)
-    @DisplayName("Clear returns without errors")
+    @DisplayName("Clear empties database and returns without errors")
     public void testClearAllSuccess() {
         String authToken = "";
         int gameId = 0;
