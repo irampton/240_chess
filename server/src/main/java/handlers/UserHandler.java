@@ -1,6 +1,7 @@
 package handlers;
 
 import model.ErrorResponse;
+import model.LoginRequest;
 import model.ResponseObject;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
@@ -47,11 +48,50 @@ public class UserHandler {
         return gson.toJson(response);
     }
 
-    /*public Object login(Request req, Response res) {
+    public Object login(Request req, Response res) {
+        LoginRequest loginRequest;
+        try {
+            loginRequest = gson.fromJson(req.body(), LoginRequest.class);
+        } catch (Throwable e) {
+            res.status(401);
+            return gson.toJson(new ResponseObject("Error: unauthorized"));
+        }
 
+        // Validate the login request (ensure username and password are not empty)
+        if (loginRequest.getUsername() == null || loginRequest.getUsername().isEmpty() ||
+                loginRequest.getPassword() == null || loginRequest.getPassword().isEmpty()) {
+            res.status(401);
+            return gson.toJson(new ResponseObject("Error: unauthorized"));
+        }
+
+        Object response = userService.login(loginRequest);
+
+        if (response instanceof ErrorResponse && ((ErrorResponse) response).getStatusCode() == 401) {
+            res.status(401);
+            return gson.toJson(new ResponseObject("Error: unauthorized"));
+        }
+
+        res.status(200);
+        return gson.toJson(response);
     }
 
     public Object logout(Request req, Response res) {
+        // Get the auth token from the request header
+        String authToken = req.headers("authorization");
 
-    }*/
+        if (authToken == null || authToken.isEmpty()) {
+            res.status(401);
+            return gson.toJson(new ResponseObject("Error: unauthorized"));
+        }
+
+        Object response = userService.logout(authToken);
+
+        if (response instanceof ErrorResponse && ((ErrorResponse) response).getStatusCode() == 401) {
+            res.status(401);
+            return gson.toJson(new ResponseObject("Error: unauthorized"));
+        }
+
+        res.status(200);
+        return gson.toJson(new ResponseObject(null));
+    }
 }

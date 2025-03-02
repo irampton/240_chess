@@ -25,6 +25,8 @@ public class Server {
 
         // User
         Spark.post("/user", userHandler::register);
+        Spark.post("/session", userHandler::login);
+        Spark.delete("/session", userHandler::logout);
 
         // Game
 

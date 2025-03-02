@@ -4,6 +4,7 @@ import model.AuthData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AuthDAO {
     // Static list to store UserData in memory
@@ -20,15 +21,26 @@ public class AuthDAO {
         }
     }
 
-    public void createAuth() {
+    // Create AuthData and add to the list
+    public AuthData createAuth(String username) {
+        AuthData authData = new AuthData(UUID.randomUUID().toString(), username);
+        authDataList.add(authData);
 
+        return authData;
     }
 
-    public void getAuth() {
-
+    // Get AuthData based on token
+    public AuthData getAuth(String token) {
+        for (AuthData auth : authDataList) {
+            if (auth.getAuthToken().equals(token)) {
+                return auth;
+            }
+        }
+        return null;
     }
 
-    public void deleteAuth() {
-
+    // Delete AuthData from the list
+    public void deleteAuth(AuthData authData) {
+        authDataList.remove(authData);
     }
 }

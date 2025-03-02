@@ -3,12 +3,9 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import model.ErrorResponse;
-import model.RegisterResult;
-import model.ResponseObject;
-import model.UserData;
+import model.*;
 
-import java.util.UUID;
+import java.util.Objects;
 
 public class UserService {
     // Instance DAOs
@@ -18,18 +15,35 @@ public class UserService {
     public Object register(UserData registerRequest) {
         try {
             UserData userResult = userDAO.createUser(registerRequest);
-            String authToken = UUID.randomUUID().toString();
-
-            return new RegisterResult(userResult.getUsername(), authToken);
+            return authDAO.createAuth(userResult.getUsername());
         } catch (DataAccessException e) {
-            return new ErrorResponse(e.toString(), 400);
+            if (Objects.equals(e.getMessage(), "Username is already taken.")) {
+                return new ErrorResponse("Username is already taken.", 403);
+            }
+            return new ErrorResponse(e.getMessage(), 400);
         }
     }
 
-    /*public LoginResult login(LoginRequest loginRequest) {
+    public Object login(LoginRequest loginRequest) {
+        UserData user = userDAO.getUser(loginRequest.getUsername());
 
+        if (user == null) {
+            return new ErrorResponse("Error: unauthorized", 401);
+        } else if (Objects.equals(loginRequest.getPassword(), user.getPassword())) {
+            return authDAO.createAuth(user.getUsername());
+        } else {
+            return new ErrorResponse("Error: unauthorized", 401);
+        }
     }
-    public void logout(LogoutRequest logoutRequest) {
 
-    }*/
+    public Object logout(String authToken) {
+        AuthData authData = authDAO.getAuth(authToken);
+
+        if (authData == null) {
+            return new ErrorResponse("Error: unauthorized", 401);
+        } else {
+            authDAO.deleteAuth(authData);
+            return null;
+        }
+    }
 }
