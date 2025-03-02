@@ -1,7 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
-import handlers.ClearHandler;
+import handlers.DatabaseHandler;
+import handlers.UserHandler;
 import spark.*;
 
 public class Server {
@@ -14,12 +15,18 @@ public class Server {
         Spark.staticFiles.location("web");
 
         var serializer = new Gson();
-        ClearHandler clearHandler = new ClearHandler();
+        DatabaseHandler databaseHandler = new DatabaseHandler();
+        UserHandler userHandler = new UserHandler();
+
         // Register your endpoints and handle exceptions here.
 
-        Spark.delete("/db",(req,res) -> (clearHandler.handleRequest(req,res)));
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        // Database
+        Spark.delete("/db", databaseHandler::clear);
+
+        // User
+        Spark.post("/user", userHandler::register);
+
+        // Game
 
         Spark.awaitInitialization();
         return Spark.port();

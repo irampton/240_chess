@@ -1,6 +1,6 @@
-package handlers;
+package model;
 
-class ResponseObject {
+public class ResponseObject {
     private String message;
 
     public ResponseObject(String message) {

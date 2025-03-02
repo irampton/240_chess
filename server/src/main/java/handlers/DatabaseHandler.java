@@ -1,18 +1,19 @@
 package handlers;
 
-import service.ClearService;
+import model.ResponseObject;
+import service.DatabaseService;
 import spark.*;
 import com.google.gson.Gson;
 
-public class ClearHandler {
+public class DatabaseHandler {
     private Gson gson = new Gson();
-    private ClearService clearService = new ClearService();
+    private DatabaseService databaseService = new DatabaseService();
 
-    public Object handleRequest(Request req, Response res) {
+    public Object clear(Request req, Response res) {
         res.status(200); // Manually set response status
         res.type("application/json");
 
-        int errorCode = clearService.clearAll();
+        int errorCode = databaseService.clearAll();
 
         ResponseObject responseObject;
 

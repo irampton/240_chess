@@ -4,7 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 
-public class ClearService {
+public class DatabaseService {
     // Instance DAOs
     private AuthDAO authDAO = new AuthDAO();
     private GameDAO gameDAO = new GameDAO();
