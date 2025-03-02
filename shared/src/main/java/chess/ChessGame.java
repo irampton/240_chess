@@ -156,7 +156,7 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(row, column);
                 ChessPiece piece = chessBoard.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
-                    if (!AllMovesInCheck(piece, position)) {
+                    if (!allMovesInCheck(piece, position)) {
                         return false;
                     }
                 }
@@ -227,15 +227,15 @@ public class ChessGame {
         return boardInCheck;
     }
 
-    private boolean AllMovesInCheck(ChessPiece piece, ChessPosition position) {
+    private boolean allMovesInCheck(ChessPiece piece, ChessPosition position) {
         Collection<ChessMove> moves = piece.pieceMoves(chessBoard, position);
-        AtomicBoolean allMovesInCheck = new AtomicBoolean(true);
+        AtomicBoolean allMovesInCheckBool = new AtomicBoolean(true);
         moves.forEach(move -> {
             if (!moveCausesCheck(chessBoard, move)) {
-                allMovesInCheck.set(false);
+                allMovesInCheckBool.set(false);
             }
         });
 
-        return allMovesInCheck.get();
+        return allMovesInCheckBool.get();
     }
 }
