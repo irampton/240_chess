@@ -117,7 +117,7 @@ public class ChessGame {
     }
 
     private boolean boardInCheck(ChessBoard board, TeamColor teamColor) {
-        Collection<ChessMove> allEnemyMoves = new ArrayList<ChessMove>();
+        Collection<ChessMove> allEnemyMoves = new ArrayList<>();
         ChessPosition kingPos = null;
         for (int row = 8; row >= 1; row--) {
             for (int column = 1; column <= 8; column++) {
@@ -126,10 +126,8 @@ public class ChessGame {
                 if (piece != null) {
                     if (piece.getTeamColor() != teamColor) {
                         allEnemyMoves.addAll(piece.pieceMoves(board, position));
-                    } else {
-                        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                            kingPos = position;
-                        }
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        kingPos = position;
                     }
                 }
             }
@@ -158,14 +156,7 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(row, column);
                 ChessPiece piece = chessBoard.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(chessBoard, position);
-                    AtomicBoolean allMovesInCheck = new AtomicBoolean(true);
-                    moves.forEach(move -> {
-                        if (!moveCausesCheck(chessBoard, move)) {
-                            allMovesInCheck.set(false);
-                        }
-                    });
-                    if (!allMovesInCheck.get()) {
+                    if (!AllMovesInCheck(piece, position)) {
                         return false;
                     }
                 }
@@ -234,5 +225,17 @@ public class ChessGame {
         board.addPiece(move.getEndPosition(), originalEndPiece);
 
         return boardInCheck;
+    }
+
+    private boolean AllMovesInCheck(ChessPiece piece, ChessPosition position) {
+        Collection<ChessMove> moves = piece.pieceMoves(chessBoard, position);
+        AtomicBoolean allMovesInCheck = new AtomicBoolean(true);
+        moves.forEach(move -> {
+            if (!moveCausesCheck(chessBoard, move)) {
+                allMovesInCheck.set(false);
+            }
+        });
+
+        return allMovesInCheck.get();
     }
 }

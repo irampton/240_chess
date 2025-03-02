@@ -66,23 +66,27 @@ public class ChessBoard {
 
     private void loadBoard(String boardText) {
         this.board = new HashMap<ChessPosition, ChessPiece>();
-        int row = 8;
         int column = 1;
+        int row = 8;
         for (var c : boardText.toCharArray()) {
             switch (c) {
+                // No Piece
+                case ' ' -> column++;
+                // New Line
                 case '\n' -> {
                     column = 1;
                     row--;
                 }
-                case ' ' -> column++;
+                // Piece Boundary
                 case '|' -> {
                 }
+                // Piece to Add
                 default -> {
-                    ChessGame.TeamColor color = Character.isLowerCase(c) ? ChessGame.TeamColor.BLACK
-                            : ChessGame.TeamColor.WHITE;
+                    ChessGame.TeamColor color = Character.isUpperCase(c) ? ChessGame.TeamColor.WHITE
+                            : ChessGame.TeamColor.BLACK;
                     var type = CHAR_TO_TYPE_MAP.get(Character.toLowerCase(c));
-                    var position = new ChessPosition(row, column);
                     var piece = new ChessPiece(color, type);
+                    var position = new ChessPosition(row, column);
                     addPiece(position, piece);
                     column++;
                 }
