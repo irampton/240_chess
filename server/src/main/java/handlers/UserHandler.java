@@ -76,7 +76,6 @@ public class UserHandler {
     }
 
     public Object logout(Request req, Response res) {
-        // Get the auth token from the request header
         String authToken = req.headers("authorization");
 
         if (authToken == null || authToken.isEmpty()) {
