@@ -69,6 +69,9 @@ public class AuthDAO {
 
     // Delete AuthData from the list
     public void deleteAuth(AuthData authData) throws DataAccessException {
+        if(authData.getAuthToken() == null){
+            throw new DataAccessException("Must have a authToken.");
+        }
         String query = "DELETE FROM auth_data WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(query)) {
