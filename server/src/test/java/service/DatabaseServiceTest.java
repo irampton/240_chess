@@ -45,11 +45,11 @@ public class DatabaseServiceTest {
         Assertions.assertEquals(1, result);
         try {
             Assertions.assertNull(authDAO.getAuth(authToken));
+            Assertions.assertNull(gameDAO.getGame(gameId));
         } catch (DataAccessException e){
             e.printStackTrace();
             Assertions.fail();
         }
-        Assertions.assertNull(gameDAO.getGame(gameId));
         Assertions.assertNull(userDAO.getUser("username"));
 
     }

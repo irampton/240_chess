@@ -41,7 +41,12 @@ public class GameService {
             return new ErrorResponse("Error: unauthorized", 401);
         }
 
-        List<GameData> gameList = gameDAO.getAllGames();
+        List<GameData> gameList;
+        try {
+            gameList = gameDAO.getAllGames();
+        } catch (DataAccessException e) {
+            return new ErrorResponse("Error getting games", 500);
+        }
 
         List<GameDataDTO> gameDTOList = new ArrayList<>();
         for (GameData gameData : gameList) {
@@ -67,29 +72,42 @@ public class GameService {
             return new ErrorResponse("Error: unauthorized", 401);
         }
 
-        GameData game = gameDAO.getGame(gameJoinRequest.getGameID());
+        GameData game;
+        try {
+            game = gameDAO.getGame(gameJoinRequest.getGameID());
+        } catch (DataAccessException e) {
+            return new ErrorResponse("Error getting game", 500);
+        }
 
-        if(game == null) {
+        if (game == null) {
             return new ErrorResponse("Error: no game exists", 400);
         }
 
-        if(Objects.equals(gameJoinRequest.getPlayerColor(), "WHITE")){
-            if(game.getWhiteUsername() != null){
+        if (Objects.equals(gameJoinRequest.getPlayerColor(), "WHITE")) {
+            if (game.getWhiteUsername() != null) {
                 return new ErrorResponse("Error: white username taken", 403);
             }
 
             game.setWhiteUsername(authData.getUsername());
-            gameDAO.updateGame(game);
+            try {
+                gameDAO.updateGame(game);
+            } catch (DataAccessException e) {
+                return new ErrorResponse("Error getting game", 500);
+            }
 
             return game;
-        } else{
-            if(game.getBlackUsername() != null){
+        } else {
+            if (game.getBlackUsername() != null) {
                 return new ErrorResponse("Error: black username taken", 403);
             }
 
             game.setBlackUsername(authData.getUsername());
-            gameDAO.updateGame(game);
-
+            try {
+                gameDAO.updateGame(game);
+            } catch (DataAccessException e) {
+                return new ErrorResponse("Error getting game", 500);
+            }
+            
             return game;
         }
 
