@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    // Static list to store UserData in memory
-    private static List<UserData> userDataList = new ArrayList<>();
-
     // Clears all users from the memory (database)
     // Returns 1 if successful, error code if otherwise
     public int clear() {
