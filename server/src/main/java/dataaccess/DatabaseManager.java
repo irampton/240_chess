@@ -84,7 +84,7 @@ public class DatabaseManager {
                 var rs = preparedStatement.executeUpdate();
             }
             try (var preparedStatement = conn.prepareStatement("CREATE TABLE IF NOT EXISTS game_data (\n" +
-                    "    gameID INT PRIMARY KEY,\n" +
+                    "    gameID INT AUTO_INCREMENT PRIMARY KEY,\n" +
                     "    whiteUsername VARCHAR(255),\n" +
                     "    blackUsername VARCHAR(255),\n" +
                     "    gameName VARCHAR(255) NOT NULL,\n" +

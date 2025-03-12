@@ -56,6 +56,10 @@ public class ChessBoard {
                 """);
     }
 
+    public void setBoard(Map<ChessPosition, ChessPiece> board) {
+        this.board = board;
+    }
+
     private static final Map<Character, ChessPiece.PieceType> CHAR_TO_TYPE_MAP = Map.of(
             'p', ChessPiece.PieceType.PAWN,
             'n', ChessPiece.PieceType.KNIGHT,
