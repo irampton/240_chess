@@ -31,7 +31,11 @@ public class UserService {
         if (user == null) {
             return new ErrorResponse("Error: unauthorized", 401);
         } else if (BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) {
-            return authDAO.createAuth(user.getUsername());
+            try {
+                return authDAO.createAuth(user.getUsername());
+            } catch (DataAccessException e) {
+                return new ErrorResponse("Error: unknown", 500);
+            }
         } else {
             return new ErrorResponse("Error: unauthorized", 401);
         }
