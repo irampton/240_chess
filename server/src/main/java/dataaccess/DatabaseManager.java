@@ -69,4 +69,10 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
+
+    public static void startUp() throws DataAccessException {
+        DatabaseManager.createDatabase();
+
+        // TODO - Create Tables
+    }
 }
