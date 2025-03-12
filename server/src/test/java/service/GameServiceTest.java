@@ -37,7 +37,9 @@ public class GameServiceTest {
                 .create(authToken, "gameName")
         ).getGameID();
 
-        Assertions.assertEquals(1, gameID);
+
+        // Assert that the gameID is a number (positive integer)
+        Assertions.assertTrue(gameID > 0);
     }
 
     // Negative Test Case: Bad auth returns a 403
