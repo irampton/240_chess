@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
+import dataaccess.DataAccessException;
 import model.*;
 
 import java.util.*;
@@ -12,7 +13,13 @@ public class GameService {
 
     // Instance DAOs
     public Object create(String authToken, String gameName) {
-        AuthData authData = authDAO.getAuth(authToken);
+        AuthData authData;
+        try {
+            authData = authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            return new ErrorResponse("Error checking auth", 500);
+        }
+
         if (authData == null) {
             return new ErrorResponse("Error: unauthorized", 401);
         }
@@ -23,7 +30,13 @@ public class GameService {
     }
 
     public Object list(String authToken) {
-        AuthData authData = authDAO.getAuth(authToken);
+        AuthData authData;
+        try {
+            authData = authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            return new ErrorResponse("Error checking auth", 500);
+        }
+
         if (authData == null) {
             return new ErrorResponse("Error: unauthorized", 401);
         }
@@ -43,7 +56,13 @@ public class GameService {
     }
 
     public Object join(String authToken, GameJoinRequest gameJoinRequest) {
-        AuthData authData = authDAO.getAuth(authToken);
+        AuthData authData;
+        try {
+            authData = authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            return new ErrorResponse("Error checking auth", 500);
+        }
+
         if (authData == null) {
             return new ErrorResponse("Error: unauthorized", 401);
         }

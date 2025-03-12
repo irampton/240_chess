@@ -45,7 +45,7 @@ public class AuthDAO {
     }
 
     // Get AuthData based on token
-    public AuthData getAuth(String token) {
+    public AuthData getAuth(String token) throws DataAccessException {
         String query = "SELECT authToken, username FROM auth_data WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(query)) {
@@ -62,13 +62,13 @@ public class AuthDAO {
             }
         } catch (SQLException | DataAccessException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new DataAccessException("Error getting auth.");
         }
         return null;
     }
 
     // Delete AuthData from the list
-    public void deleteAuth(AuthData authData) {
+    public void deleteAuth(AuthData authData) throws DataAccessException {
         String query = "DELETE FROM auth_data WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(query)) {
@@ -77,7 +77,7 @@ public class AuthDAO {
             }
         } catch (SQLException | DataAccessException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new DataAccessException("Error deleting auth.");
         }
     }
 }

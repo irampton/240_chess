@@ -42,12 +42,21 @@ public class UserService {
     }
 
     public Object logout(String authToken) {
-        AuthData authData = authDAO.getAuth(authToken);
+        AuthData authData;
+        try {
+            authData = authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            return new ErrorResponse("Error checking auth", 500);
+        }
 
         if (authData == null) {
             return new ErrorResponse("Error: unauthorized", 401);
         } else {
-            authDAO.deleteAuth(authData);
+            try {
+                authDAO.deleteAuth(authData);
+            } catch (DataAccessException e) {
+                return new ErrorResponse("Error: unknown", 500);
+            }
             return null;
         }
     }
