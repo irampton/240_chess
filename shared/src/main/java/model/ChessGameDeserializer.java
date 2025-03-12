@@ -47,7 +47,10 @@ public class ChessGameDeserializer implements JsonDeserializer<ChessGame> {
         newBoard.setBoard(board);
         game.setBoard(newBoard);
 
-        game.setTeamTurn(Objects.equals(jsonObject.get("currentTeam").getAsString(), "WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK);
+        game.setTeamTurn(
+                Objects.equals(jsonObject.get("currentTeam").getAsString(),
+                        "WHITE"
+                ) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK);
 
         return game;
     }

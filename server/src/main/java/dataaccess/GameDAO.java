@@ -6,6 +6,8 @@ import model.ChessGameDeserializer;
 import model.GameData;
 import model.UserData;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,16 +51,8 @@ public class GameDAO {
                 preparedStatement.setString(3, null); // Black username (initially null)
                 String gameJson = gson.toJson(game.getGame());
                 preparedStatement.setString(4, gameJson);
-
-                int affectedRows = preparedStatement.executeUpdate();
-                if (affectedRows > 0) {
-                    try (var generatedKeys = preparedStatement.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            // Set the auto-generated game ID
-                            game.setGameID(generatedKeys.getInt(1));
-                        }
-                    }
-                }
+                
+                game.setGameID(getGeneratedGameID(preparedStatement));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,6 +60,19 @@ public class GameDAO {
         }
 
         return game;
+    }
+
+    private int getGeneratedGameID(PreparedStatement preparedStatement) throws SQLException {
+        int affectedRows = preparedStatement.executeUpdate();
+        if (affectedRows > 0) {
+            try (var generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    // Return the auto-generated game ID
+                    return generatedKeys.getInt(1);
+                }
+            }
+        }
+        return -1; // Return -1 if no generated keys
     }
 
     public GameData getGame(int gameId) throws DataAccessException {
