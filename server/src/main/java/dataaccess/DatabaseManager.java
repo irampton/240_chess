@@ -73,6 +73,33 @@ public class DatabaseManager {
     public static void startUp() throws DataAccessException {
         DatabaseManager.createDatabase();
 
-        // TODO - Create Tables
+        // Create Tables
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("CREATE TABLE users (\n" +
+                    "    id INT AUTO_INCREMENT PRIMARY KEY,\n" +
+                    "    username VARCHAR(255) NOT NULL UNIQUE,\n" +
+                    "    email VARCHAR(255) NOT NULL UNIQUE,\n" +
+                    "    password_hash VARCHAR(255) NOT NULL\n" +
+                    ");\n")) {
+                var rs = preparedStatement.executeUpdate();
+            }
+            try (var preparedStatement = conn.prepareStatement("CREATE TABLE game_data (\n" +
+                    "    gameID INT PRIMARY KEY,\n" +
+                    "    whiteUsername VARCHAR(255) NOT NULL,\n" +
+                    "    blackUsername VARCHAR(255) NOT NULL,\n" +
+                    "    gameName VARCHAR(255) NOT NULL,\n" +
+                    "    game TEXT NOT NULL\n" +
+                    ");\n")) {
+                var rs = preparedStatement.executeUpdate();
+            }
+            try (var preparedStatement = conn.prepareStatement("CREATE TABLE auth_data (\n" +
+                    "    authToken VARCHAR(255) PRIMARY KEY,\n" +
+                    "    username VARCHAR(255) NOT NULL\n" +
+                    ");")) {
+                var rs = preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
