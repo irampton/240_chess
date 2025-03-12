@@ -8,13 +8,6 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Server: " + piece);
 
-        // Load the database
-        try {
-            DatabaseManager.startUp();
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
-
         Server server = new Server();
         server.run(8080);
     }

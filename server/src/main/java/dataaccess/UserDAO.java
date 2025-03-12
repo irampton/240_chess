@@ -8,6 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
+    public UserDAO(){
+        // Load the database
+        try {
+            DatabaseManager.startUp();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+    }
     // Clears all users from the memory (database)
     // Returns 1 if successful, error code if otherwise
     public int clear() {
