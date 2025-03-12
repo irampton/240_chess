@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -237,5 +238,24 @@ public class ChessGame {
         });
 
         return allMovesInCheckBool.get();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return currentTeam == chessGame.currentTeam && Objects.equals(chessBoard, chessGame.chessBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentTeam, chessBoard);
+    }
+
+    @Override
+    public String toString() {
+        return "Current Team: " + currentTeam + "\n" + chessBoard.toString();
     }
 }
