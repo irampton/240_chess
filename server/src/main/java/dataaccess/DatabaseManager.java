@@ -75,7 +75,7 @@ public class DatabaseManager {
 
         // Create Tables
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("CREATE TABLE users (\n" +
+            try (var preparedStatement = conn.prepareStatement("CREATE TABLE IF NOT EXISTS users (\n" +
                     "    id INT AUTO_INCREMENT PRIMARY KEY,\n" +
                     "    username VARCHAR(255) NOT NULL UNIQUE,\n" +
                     "    email VARCHAR(255) NOT NULL UNIQUE,\n" +
@@ -83,16 +83,16 @@ public class DatabaseManager {
                     ");\n")) {
                 var rs = preparedStatement.executeUpdate();
             }
-            try (var preparedStatement = conn.prepareStatement("CREATE TABLE game_data (\n" +
+            try (var preparedStatement = conn.prepareStatement("CREATE TABLE IF NOT EXISTS game_data (\n" +
                     "    gameID INT PRIMARY KEY,\n" +
-                    "    whiteUsername VARCHAR(255) NOT NULL,\n" +
-                    "    blackUsername VARCHAR(255) NOT NULL,\n" +
+                    "    whiteUsername VARCHAR(255),\n" +
+                    "    blackUsername VARCHAR(255),\n" +
                     "    gameName VARCHAR(255) NOT NULL,\n" +
                     "    game TEXT NOT NULL\n" +
                     ");\n")) {
                 var rs = preparedStatement.executeUpdate();
             }
-            try (var preparedStatement = conn.prepareStatement("CREATE TABLE auth_data (\n" +
+            try (var preparedStatement = conn.prepareStatement("CREATE TABLE IF NOT EXISTS auth_data (\n" +
                     "    authToken VARCHAR(255) PRIMARY KEY,\n" +
                     "    username VARCHAR(255) NOT NULL\n" +
                     ");")) {
