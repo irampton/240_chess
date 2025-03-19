@@ -43,6 +43,7 @@ public class GameState {
                     case "register":
                         break;
                     case "login":
+                        currentState = State.LOGGED_IN;
                         break;
                     default:
                         System.out.println("Invalid command");
@@ -50,6 +51,21 @@ public class GameState {
                 break;
             case LOGGED_IN:
                 switch (command[0].toLowerCase()) {
+                    case "help":
+                        break;
+                    case "logout":
+                        currentState = State.LOGGED_OUT;
+                        break;
+                    case "create":
+                        break;
+                    case "list":
+                        break;
+                    case "play":
+                        currentState = State.IN_GAME;
+                        break;
+                    case "observe":
+                        currentState = State.IN_GAME;
+                        break;
                     default:
                         System.out.println("Invalid command");
                 }
@@ -57,6 +73,8 @@ public class GameState {
             case IN_GAME:
                 switch (command[0].toLowerCase()) {
                     case "leave":
+                        System.out.println("Leaving game");
+                        currentState = State.LOGGED_IN;
                         break;
                     default:
                         System.out.println("Invalid command");
