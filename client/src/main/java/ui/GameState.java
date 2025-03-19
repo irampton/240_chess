@@ -37,24 +37,24 @@ public class GameState {
             case LOGGED_OUT:
                 switch (command[0].toLowerCase()) {
                     case "help":
-                        //help
+                        // help
                         System.out.print(SET_TEXT_COLOR_BLUE);
                         System.out.print("Help\t\t\t\t\t\t\t\t\t\t");
                         System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
                         System.out.print("- List all available commands\n");
-                        //quit
+                        // quit
                         System.out.print(SET_TEXT_COLOR_BLUE);
                         System.out.print("Quit\t\t\t\t\t\t\t\t\t\t");
                         System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
                         System.out.print("- Quit the chess client\n");
-                        //login
+                        // login
                         System.out.print(SET_TEXT_COLOR_BLUE);
                         System.out.print("Login\t\t");
                         System.out.print(SET_TEXT_COLOR_CYAN);
                         System.out.print("<USERNAME> <PASSWORD>\t\t\t");
                         System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
                         System.out.print("- Login to the server\n");
-                        //register
+                        // register
                         System.out.print(SET_TEXT_COLOR_BLUE);
                         System.out.print("Register\t");
                         System.out.print(SET_TEXT_COLOR_CYAN);
@@ -78,6 +78,42 @@ public class GameState {
             case LOGGED_IN:
                 switch (command[0].toLowerCase()) {
                     case "help":
+                        // help
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print("Help\t\t\t\t\t\t\t");
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                        System.out.print("- List all available commands\n");
+                        // quit
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print("Quit\t\t\t\t\t\t\t");
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                        System.out.print("- Quit the chess client\n");
+                        // list
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print("List\t\t\t\t\t\t\t");
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                        System.out.print("- List all available games\n");
+                        // create
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print("Create\t");
+                        System.out.print(SET_TEXT_COLOR_CYAN);
+                        System.out.print("<NAME>\t\t\t\t\t");
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                        System.out.print("- Create a new game\n");
+                        // join
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print("Join\t");
+                        System.out.print(SET_TEXT_COLOR_CYAN);
+                        System.out.print("<ID> [WHITE|BLACK]\t\t");
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                        System.out.print("- Join a game\n");
+                        // observe
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print("Observe\t");
+                        System.out.print(SET_TEXT_COLOR_CYAN);
+                        System.out.print("<ID>\t\t\t\t\t");
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                        System.out.print("- Observe a game\n");
                         break;
                     case "logout":
                         currentState = State.LOGGED_OUT;
@@ -86,11 +122,15 @@ public class GameState {
                         break;
                     case "list":
                         break;
-                    case "play":
+                    case "join":
                         currentState = State.IN_GAME;
                         break;
                     case "observe":
                         currentState = State.IN_GAME;
+                        break;
+                    case "quit":
+                        System.out.println("Goodbye!");
+                        System.exit(0);
                         break;
                     default:
                         System.out.println("Invalid command");
