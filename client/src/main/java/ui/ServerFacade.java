@@ -1,10 +1,15 @@
 package ui;
 
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.*;
 import java.util.List;
+import java.util.Map;
 
 public class ServerFacade {
     // Class-level variables for server port and URL
@@ -26,23 +31,36 @@ public class ServerFacade {
         }
     }
 
-    public void clearDatabase() {
+    public boolean clearDatabase() throws Exception {
+        URI uri = new URI(this.serverUrl + ":" + this.port + "/db");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("DELETE");
 
+        http.connect();
+
+        // Handle bad HTTP status
+        var status = http.getResponseCode();
+        if (status >= 200 && status < 300) {
+            return true;
+        } else {
+            //System.out.println("Server returned HTTP code " + status);
+            return false;
+        }
     }
 
-    public AuthData register(UserData user) {
+    /*public AuthData register(UserData user) {
 
     }
 
     public AuthData login(UserData user) {
 
-    }
+    }*/
 
     public void logout() {
 
     }
 
-    public List<GameData> listGames() {
+    /*public List<GameData> listGames() {
 
     }
 
@@ -52,6 +70,6 @@ public class ServerFacade {
 
     public void joinGame(String playerColor, int gameID) {
 
-    }
+    }*/
 
 }

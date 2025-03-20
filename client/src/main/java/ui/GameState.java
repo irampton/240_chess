@@ -13,9 +13,11 @@ enum State {
 public class GameState {
     private State currentState;
     private Scanner scanner = new Scanner(System.in);
+    private ServerFacade serverFacade;
 
     public GameState() {
         currentState = State.LOGGED_OUT;
+        serverFacade = new ServerFacade(null, 0);
     }
 
     public void getCommand() {
@@ -70,6 +72,18 @@ public class GameState {
                         break;
                     case "login":
                         currentState = State.LOGGED_IN;
+                        break;
+                    case "clear":
+                        try {
+                            if (serverFacade.clearDatabase()) {
+                                System.out.println("Database cleared");
+                            } else {
+                                System.out.println("Failed to clear database");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Error clearing database");
+                            e.printStackTrace();
+                        }
                         break;
                     default:
                         System.out.println("Invalid command");
