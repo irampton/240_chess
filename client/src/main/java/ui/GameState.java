@@ -163,7 +163,15 @@ public class GameState {
                         System.out.print("- Observe a game\n");
                         break;
                     case "logout":
-                        currentState = State.LOGGED_OUT;
+                        try {
+                            serverFacade.logout();
+                            System.out.print(SET_TEXT_COLOR_CYAN);
+                            System.out.print("Logged out");
+                            System.out.println();
+                            currentState = State.LOGGED_OUT;
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
                         break;
                     case "create":
                         break;

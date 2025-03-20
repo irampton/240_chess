@@ -122,7 +122,32 @@ public class ServerFacade {
     }
 
     public void logout() throws Exception {
-        
+        URI uri = new URI(this.serverUrl + ":" + this.port + "/session");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("DELETE");
+
+        // Set the Authorization header if we have a token
+        if (this.authToken == null) {
+            throw new Exception("Not logged in");
+        }
+        http.setRequestProperty("Authorization", this.authToken);
+
+        http.connect();
+
+        // Handle bad HTTP status
+        var status = http.getResponseCode();
+        if (status >= 200 && status < 300) {
+            this.authToken = null;
+        } else {
+            //System.out.println("Server returned HTTP code " + status);
+            switch (status) {
+                case 401:
+                    throw new Exception("Unauthorized");
+                case 500:
+                    throw new Exception("Internal Server Error");
+            }
+            throw new Exception("Error logging out");
+        }
     }
 
     /*public List<GameData> listGames() {
