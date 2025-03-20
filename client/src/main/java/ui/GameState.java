@@ -1,10 +1,8 @@
 package ui;
 
-import model.AuthData;
-import model.CreateGameRequest;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -191,6 +189,19 @@ public class GameState {
                         }
                         break;
                     case "list":
+                        try {
+                            List<GameData> gameList = serverFacade.listGames();
+                            int index = 1;
+                            for (GameData game : gameList) {
+                                System.out.print(SET_TEXT_COLOR_CYAN);
+                                System.out.print(index + "\t");
+                                System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                                System.out.println(game.getGameName() + "\t");
+                                index++;
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
                         break;
                     case "join":
                         currentState = State.IN_GAME;

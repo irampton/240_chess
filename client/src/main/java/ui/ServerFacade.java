@@ -6,6 +6,7 @@ import model.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -147,9 +148,52 @@ public class ServerFacade {
         }
     }
 
-    /*public List<GameData> listGames() {
+    public List<GameData> listGames() throws Exception {
+        URI uri = new URI(this.serverUrl + ":" + this.port + "/game");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("GET");
 
-    }*/
+        // Set the Authorization header if we have a token
+        if (this.authToken == null) {
+            throw new Exception("Not logged in");
+        }
+        http.setRequestProperty("Authorization", this.authToken);
+
+        http.connect();
+
+        var status = http.getResponseCode();
+        if (status >= 200 && status < 300) {
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+
+                // Deserialize the JSON into a Map
+                Map<String, Object> responseMap = new Gson().fromJson(inputStreamReader, Map.class);
+
+                // Get the 'games' array from the Map
+                List<Map<String, Object>> gameDataList = (List<Map<String, Object>>) responseMap.get("games");
+
+                List<GameData> games = new ArrayList<>();
+                for (Map<String, Object> gameData : gameDataList) {
+                    int gameID = ((Double) gameData.get("gameID")).intValue();
+                    String gameName = (String) gameData.get("gameName");
+                    String whiteUsername = (String) gameData.get("whiteUsername");
+                    String blackUsername = (String) gameData.get("blackUsername");
+                    games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, null));
+                }
+
+                return games;
+            }
+        } else {
+            //System.out.println("Server returned HTTP code " + status);
+            switch (status) {
+                case 401:
+                    throw new Exception("Unauthorized");
+                case 500:
+                    throw new Exception("Internal Server Error");
+            }
+            throw new Exception("Error logging in");
+        }
+    }
 
     public void createGame(CreateGameRequest newGame) throws Exception {
         URI uri = new URI(this.serverUrl + ":" + this.port + "/game");
@@ -175,7 +219,7 @@ public class ServerFacade {
         // Handle bad HTTP status
         var status = http.getResponseCode();
         if (status < 200 || status > 300) {
-            System.out.println("Server returned HTTP code " + status);
+            //System.out.println("Server returned HTTP code " + status);
             switch (status) {
                 case 400:
                     throw new Exception("Bad Request");
