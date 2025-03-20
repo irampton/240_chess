@@ -1,6 +1,7 @@
 package ui;
 
 import model.AuthData;
+import model.CreateGameRequest;
 import model.LoginRequest;
 import model.UserData;
 
@@ -115,7 +116,6 @@ public class GameState {
                             }
                         } catch (Exception e) {
                             System.out.println("Error clearing database");
-                            e.printStackTrace();
                         }
                         break;
                     default:
@@ -174,6 +174,21 @@ public class GameState {
                         }
                         break;
                     case "create":
+                        try {
+                            if (command.length != 2) {
+                                throw new IllegalArgumentException("Invalid number of arguments. Expected 2 arguments.");
+                            }
+                            serverFacade.createGame(new CreateGameRequest(command[1]));
+                            System.out.print(SET_TEXT_COLOR_CYAN);
+                            System.out.print("Created game \"");
+                            System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                            System.out.print(command[1]);
+                            System.out.print(SET_TEXT_COLOR_CYAN);
+                            System.out.print("\"");
+                            System.out.println();
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
                         break;
                     case "list":
                         break;
