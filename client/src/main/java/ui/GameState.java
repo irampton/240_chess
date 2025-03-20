@@ -1,5 +1,9 @@
 package ui;
 
+import model.AuthData;
+import model.LoginRequest;
+import model.UserData;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -69,9 +73,38 @@ public class GameState {
                         System.exit(0);
                         break;
                     case "register":
+                        try {
+                            if (command.length != 4) {
+                                throw new IllegalArgumentException("Invalid number of arguments. Expected 4 arguments.");
+                            }
+                            UserData newUser = new UserData(command[1], command[2], command[3]);
+                            serverFacade.register(newUser);
+                            System.out.print(SET_TEXT_COLOR_CYAN);
+                            System.out.print("Logged in as: ");
+                            System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                            System.out.print(command[1]);
+                            System.out.println();
+                            currentState = State.LOGGED_IN;
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
                         break;
                     case "login":
-                        currentState = State.LOGGED_IN;
+                        try {
+                            if (command.length != 3) {
+                                throw new IllegalArgumentException("Invalid number of arguments. Expected 3 arguments.");
+                            }
+                            LoginRequest loginInfo = new LoginRequest(command[1], command[2]);
+                            serverFacade.login(loginInfo);
+                            System.out.print(SET_TEXT_COLOR_CYAN);
+                            System.out.print("Logged in as: ");
+                            System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+                            System.out.print(command[1]);
+                            System.out.println();
+                            currentState = State.LOGGED_IN;
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
                         break;
                     case "clear":
                         try {

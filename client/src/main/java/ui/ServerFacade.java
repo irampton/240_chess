@@ -3,6 +3,7 @@ package ui;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import model.LoginRequest;
 import model.UserData;
 
 import java.io.InputStream;
@@ -48,16 +49,80 @@ public class ServerFacade {
         }
     }
 
-    /*public AuthData register(UserData user) {
+    public void register(UserData user) throws Exception {
+        URI uri = new URI(this.serverUrl + ":" + this.port + "/user");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("POST");
 
+        // Specify that we are going to write out data
+        http.setDoOutput(true);
+        http.addRequestProperty("Content-Type", "application/json");
+
+        try (var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(user);
+            outputStream.write(jsonBody.getBytes());
+        }
+
+        http.connect();
+
+        // Handle bad HTTP status
+        var status = http.getResponseCode();
+        if (status >= 200 && status < 300) {
+            try (InputStream in = http.getInputStream()) {
+                AuthData auth = new Gson().fromJson(new InputStreamReader(in), AuthData.class);
+                this.authToken = auth.getAuthToken();
+            }
+        } else {
+            //System.out.println("Server returned HTTP code " + status);
+            switch (status) {
+                case 400:
+                    throw new Exception("Bad Request");
+                case 403:
+                    throw new Exception("Username already taken");
+                case 500:
+                    throw new Exception("Internal Server Error");
+            }
+            throw new Exception("Error registering user");
+        }
     }
 
-    public AuthData login(UserData user) {
+    public void login(LoginRequest loginInfo) throws Exception {
+        URI uri = new URI(this.serverUrl + ":" + this.port + "/session");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("POST");
 
-    }*/
+        // Specify that we are going to write out data
+        http.setDoOutput(true);
+        http.addRequestProperty("Content-Type", "application/json");
 
-    public void logout() {
+        try (var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(loginInfo);
+            outputStream.write(jsonBody.getBytes());
+        }
 
+        http.connect();
+
+        // Handle bad HTTP status
+        var status = http.getResponseCode();
+        if (status >= 200 && status < 300) {
+            try (InputStream in = http.getInputStream()) {
+                AuthData auth = new Gson().fromJson(new InputStreamReader(in), AuthData.class);
+                this.authToken = auth.getAuthToken();
+            }
+        } else {
+            //System.out.println("Server returned HTTP code " + status);
+            switch (status) {
+                case 401:
+                    throw new Exception("Unauthorized");
+                case 500:
+                    throw new Exception("Internal Server Error");
+            }
+            throw new Exception("Error logging in");
+        }
+    }
+
+    public void logout() throws Exception {
+        
     }
 
     /*public List<GameData> listGames() {
