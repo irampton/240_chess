@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import model.*;
 
 import java.util.List;
@@ -15,8 +17,9 @@ enum State {
 
 public class GameState {
     private State currentState;
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
     private ServerFacade serverFacade;
+    private final DrawChessBoard boardDrawer = new DrawChessBoard();
 
     public GameState() {
         currentState = State.LOGGED_OUT;
@@ -208,6 +211,9 @@ public class GameState {
                         break;
                     case "observe":
                         currentState = State.IN_GAME;
+                        ChessBoard board = new ChessBoard();
+                        board.resetBoard();
+                        boardDrawer.drawBoard(board, ChessGame.TeamColor.WHITE);
                         break;
                     case "quit":
                         System.out.println("Goodbye!");
