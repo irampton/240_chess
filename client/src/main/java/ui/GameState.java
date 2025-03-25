@@ -182,31 +182,11 @@ public class GameState {
                 break;
             case "join":
                 try {
-                    if (command.length != 3) {
-                        throw new IllegalArgumentException("Invalid number of arguments. Expected 3 arguments.");
-                    }
-                    GameData game = gameList.get(Integer.parseInt(command[1]) - 1);
-                    int gameID = game.getGameID();
-                    ChessGame.TeamColor teamColor = command[2].toUpperCase().equals("WHITE")
-                            ? ChessGame.TeamColor.WHITE
-                            : ChessGame.TeamColor.BLACK;
-                    if (
-                            (teamColor == ChessGame.TeamColor.WHITE
-                                    && game.getWhiteUsername() != null)
-                                    || (teamColor == ChessGame.TeamColor.BLACK
-                                    && game.getBlackUsername() != null)
-                    ) {
-                        System.out.print(SET_TEXT_COLOR_RED);
-                        System.out.print("Spot already taken");
-                        System.out.println(RESET_TEXT_COLOR);
-                    } else {
-                        serverFacade.joinGame(new GameJoinRequest(command[2].toUpperCase(), gameID));
-                        ChessBoard board = new ChessBoard();
-                        board.resetBoard();
-                        boardDrawer.drawBoard(board, teamColor);
-                    }
+                    joinGameCommand(command);
                 } catch (Exception e) {
+                    System.out.print(SET_TEXT_COLOR_RED);
                     System.out.println(e.getMessage());
+                    System.out.println(RESET_TEXT_COLOR);
                 }
                 //currentState = State.IN_GAME;
                 break;
@@ -222,26 +202,6 @@ public class GameState {
                 break;
             default:
                 System.out.println("Invalid command");
-        }
-        return;
-    }
-
-    private void printGameList() {
-        System.out.print(RESET_TEXT_COLOR);
-        System.out.println("ID Game Name           White Player        Black Player");
-        int index = 1;
-        for (GameData game : gameList) {
-            String whiteUsername = (game.getWhiteUsername() != null) ? game.getWhiteUsername() : "---";
-            String blackUsername = (game.getBlackUsername() != null) ? game.getBlackUsername() : "---";
-            System.out.print(SET_TEXT_COLOR_CYAN);
-            System.out.print(String.format("%-3d", index));
-            System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-            System.out.print(String.format("%-20s", game.getGameName()));
-            System.out.print(SET_TEXT_COLOR_PURPLE);
-            System.out.print(String.format("%-20s", whiteUsername));
-            System.out.print(String.format("%-20s", blackUsername));
-            System.out.println();
-            index++;
         }
     }
 
@@ -282,6 +242,64 @@ public class GameState {
         System.out.print("<ID>\t\t\t\t\t");
         System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
         System.out.print("- Observe a game\n");
+    }
+
+    private void printGameList() {
+        System.out.print(RESET_TEXT_COLOR);
+        System.out.println("ID Game Name           White Player        Black Player");
+        int index = 1;
+        for (GameData game : gameList) {
+            String whiteUsername = (game.getWhiteUsername() != null) ? game.getWhiteUsername() : "---";
+            String blackUsername = (game.getBlackUsername() != null) ? game.getBlackUsername() : "---";
+            System.out.print(SET_TEXT_COLOR_CYAN);
+            System.out.print(String.format("%-3d", index));
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+            System.out.print(String.format("%-20s", game.getGameName()));
+            System.out.print(SET_TEXT_COLOR_PURPLE);
+            System.out.print(String.format("%-20s", whiteUsername));
+            System.out.print(String.format("%-20s", blackUsername));
+            System.out.println();
+            index++;
+        }
+    }
+
+    private void joinGameCommand(String[] command) throws Exception {
+        if (gameList == null) {
+            throw new IllegalArgumentException("Please list games before joining any");
+        }
+        if (command.length != 3) {
+            throw new IllegalArgumentException("Invalid number of arguments. Expected 3 arguments.");
+        }
+
+        int gameNumber = Integer.parseInt(command[1]);
+
+        // Check arguments
+        if (!(gameNumber >= 1 && gameNumber <= gameList.size())) {
+            throw new IllegalArgumentException("Invalid game ID");
+        }
+        if (!(command[2].equalsIgnoreCase("WHITE") || command[2].equalsIgnoreCase("BLACK"))) {
+            throw new IllegalArgumentException("Invalid color");
+        }
+
+        GameData game = gameList.get(gameNumber - 1);
+        int gameID = game.getGameID();
+
+        ChessGame.TeamColor teamColor = command[2].equalsIgnoreCase("WHITE")
+                ? ChessGame.TeamColor.WHITE
+                : ChessGame.TeamColor.BLACK;
+        if (
+                (teamColor == ChessGame.TeamColor.WHITE
+                        && game.getWhiteUsername() != null)
+                        || (teamColor == ChessGame.TeamColor.BLACK
+                        && game.getBlackUsername() != null)
+        ) {
+            throw new IllegalArgumentException("Color already taken");
+        } else {
+            serverFacade.joinGame(new GameJoinRequest(command[2].toUpperCase(), gameID));
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            boardDrawer.drawBoard(board, teamColor);
+        }
     }
 
     private void inGameCommands(String[] command) {
