@@ -102,18 +102,18 @@ public class ServerFacade {
 
         // Handle bad HTTP status
         var status = http.getResponseCode();
-        if (status >= 200 && status < 300) {
+        //System.out.println("Server returned HTTP code " + status);
+        if (status < 300 && status >= 200) {
             try (InputStream in = http.getInputStream()) {
                 AuthData auth = new Gson().fromJson(new InputStreamReader(in), AuthData.class);
                 this.authToken = auth.getAuthToken();
             }
         } else {
-            //System.out.println("Server returned HTTP code " + status);
             switch (status) {
-                case 401:
-                    throw new Exception("Unauthorized");
                 case 500:
                     throw new Exception("Internal Server Error");
+                case 401:
+                    throw new Exception("Unauthorized");
             }
             throw new Exception("Error logging in");
         }

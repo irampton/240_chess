@@ -9,10 +9,6 @@ import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
 
-    public void drawChessBoard() {
-
-    }
-
     public void drawBoard(ChessBoard chessBoard, ChessGame.TeamColor teamColor) {
         // for each position on the board
         printRowLetters(teamColor);
@@ -27,7 +23,9 @@ public class DrawChessBoard {
                 }
 
                 // Get Piece
-                ChessPosition pos = new ChessPosition(teamColor == ChessGame.TeamColor.WHITE ? row : (9 - row), teamColor == ChessGame.TeamColor.WHITE ? column : (9 - column));
+                ChessPosition pos = new ChessPosition(teamColor == ChessGame.TeamColor.WHITE
+                        ? row
+                        : (9 - row), teamColor == ChessGame.TeamColor.WHITE ? column : (9 - column));
                 ChessPiece piece = chessBoard.getPiece(pos);
                 if (piece == null) {
                     System.out.print(EMPTY);
@@ -106,7 +104,9 @@ public class DrawChessBoard {
     private static void printRowLetters(ChessGame.TeamColor teamColor) {
         System.out.print(SET_TEXT_COLOR_WHITE);
         System.out.print(SET_BG_COLOR_DARK_GREY);
-        String letters = "   \u2002\u2004a\u2003\u2002b\u2003\u2002\u200Ac\u2003\u2002d\u2003\u2002\u200Ae\u2003\u2002f\u2003\u2002\u200Ag\u2003\u2002\u200Ah\u2002\u2004   ";
+        String letters = "   \u2002\u2004a\u2003\u2002b\u2003\u2002\u200Ac"
+                + "\u2003\u2002d\u2003\u2002\u200Ae\u2003\u2002f"
+                + "\u2003\u2002\u200Ag\u2003\u2002\u200Ah\u2002\u2004   ";
         if (teamColor == ChessGame.TeamColor.WHITE) {
             System.out.print(letters);
         } else {
