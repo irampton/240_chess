@@ -5,6 +5,7 @@ import chess.ChessGame;
 import model.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -20,6 +21,7 @@ public class GameState {
     private final Scanner scanner = new Scanner(System.in);
     private ServerFacade serverFacade;
     private final DrawChessBoard boardDrawer = new DrawChessBoard();
+    private List<GameData> gameList;
 
     public GameState() {
         currentState = State.LOGGED_OUT;
@@ -193,13 +195,21 @@ public class GameState {
                         break;
                     case "list":
                         try {
-                            List<GameData> gameList = serverFacade.listGames();
+                            gameList = serverFacade.listGames();
+                            System.out.print(RESET_TEXT_COLOR);
+                            System.out.println("ID Game Name           White Player        Black Player");
                             int index = 1;
                             for (GameData game : gameList) {
+                                String whiteUsername = (game.getWhiteUsername() != null) ? game.getWhiteUsername() : "---";
+                                String blackUsername = (game.getBlackUsername() != null) ? game.getBlackUsername() : "---";
                                 System.out.print(SET_TEXT_COLOR_CYAN);
-                                System.out.print(index + "\t");
+                                System.out.print(String.format("%-3d", index));
                                 System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                                System.out.println(game.getGameName() + "\t");
+                                System.out.print(String.format("%-20s", game.getGameName()));
+                                System.out.print(SET_TEXT_COLOR_PURPLE);
+                                System.out.print(String.format("%-20s", whiteUsername));
+                                System.out.print(String.format("%-20s", blackUsername));
+                                System.out.println();
                                 index++;
                             }
                         } catch (Exception e) {
@@ -207,10 +217,30 @@ public class GameState {
                         }
                         break;
                     case "join":
-                        currentState = State.IN_GAME;
+                        try {
+                            if (command.length != 3) {
+                                throw new IllegalArgumentException("Invalid number of arguments. Expected 3 arguments.");
+                            }
+                            GameData game = gameList.get(Integer.parseInt(command[1]) - 1);
+                            int gameID = game.getGameID();
+                            ChessGame.TeamColor teamColor = command[2].toUpperCase().equals("WHITE") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+                            if (teamColor == ChessGame.TeamColor.WHITE && game.getWhiteUsername() != null || teamColor == ChessGame.TeamColor.BLACK && game.getBlackUsername() != null) {
+                                System.out.print(SET_TEXT_COLOR_RED);
+                                System.out.print("Spot already taken");
+                                System.out.println(RESET_TEXT_COLOR);
+                            } else {
+                                serverFacade.joinGame(new GameJoinRequest(command[2].toUpperCase(), gameID));
+                                ChessBoard board = new ChessBoard();
+                                board.resetBoard();
+                                boardDrawer.drawBoard(board, teamColor);
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                        //currentState = State.IN_GAME;
                         break;
                     case "observe":
-                        currentState = State.IN_GAME;
+                        //currentState = State.IN_GAME;
                         ChessBoard board = new ChessBoard();
                         board.resetBoard();
                         boardDrawer.drawBoard(board, ChessGame.TeamColor.WHITE);

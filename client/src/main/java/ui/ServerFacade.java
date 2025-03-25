@@ -232,8 +232,43 @@ public class ServerFacade {
         }
     }
 
-    /*public void joinGame(String playerColor, int gameID) {
+    public void joinGame(GameJoinRequest joinRequest) throws Exception {
+        URI uri = new URI(this.serverUrl + ":" + this.port + "/game");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("PUT");
 
-    }*/
+        // Set the Authorization header if we have a token
+        if (this.authToken == null) {
+            throw new Exception("Not logged in");
+        }
+        http.setRequestProperty("Authorization", this.authToken);
+
+        http.setDoOutput(true);
+        http.addRequestProperty("Content-Type", "application/json");
+
+        try (var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(joinRequest);
+            outputStream.write(jsonBody.getBytes());
+        }
+
+        http.connect();
+
+        // Handle bad HTTP status
+        var status = http.getResponseCode();
+        if (status < 200 || status > 300) {
+            //System.out.println("Server returned HTTP code " + status);
+            switch (status) {
+                case 400:
+                    throw new Exception("Bad Request");
+                case 401:
+                    throw new Exception("Unauthorized");
+                case 403:
+                    throw new Exception("Color already taken");
+                case 500:
+                    throw new Exception("Internal Server Error");
+            }
+            throw new Exception("Error creating game");
+        }
+    }
 
 }
