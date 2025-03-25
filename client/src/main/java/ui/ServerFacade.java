@@ -3,6 +3,7 @@ package ui;
 import com.google.gson.Gson;
 import model.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -66,10 +67,7 @@ public class ServerFacade {
         // Handle bad HTTP status
         var status = http.getResponseCode();
         if (status >= 200 && status < 300) {
-            try (InputStream in = http.getInputStream()) {
-                AuthData auth = new Gson().fromJson(new InputStreamReader(in), AuthData.class);
-                this.authToken = auth.getAuthToken();
-            }
+            getAuthToken(http);
         } else {
             //System.out.println("Server returned HTTP code " + status);
             switch (status) {
@@ -103,11 +101,8 @@ public class ServerFacade {
         // Handle bad HTTP status
         var status = http.getResponseCode();
         //System.out.println("Server returned HTTP code " + status);
-        if (status < 300 && status >= 200) {
-            try (InputStream in = http.getInputStream()) {
-                AuthData auth = new Gson().fromJson(new InputStreamReader(in), AuthData.class);
-                this.authToken = auth.getAuthToken();
-            }
+        if (status >= 200 && status < 300) {
+            getAuthToken(http);
         } else {
             switch (status) {
                 case 500:
@@ -116,6 +111,13 @@ public class ServerFacade {
                     throw new Exception("Unauthorized");
             }
             throw new Exception("Error logging in");
+        }
+    }
+
+    private void getAuthToken(HttpURLConnection http) throws IOException {
+        try (InputStream in = http.getInputStream()) {
+            AuthData auth = new Gson().fromJson(new InputStreamReader(in), AuthData.class);
+            this.authToken = auth.getAuthToken();
         }
     }
 
