@@ -328,4 +328,7 @@ public class ServerFacade {
         wsClient.showNextOutput();
     }
 
+    public void resignGame(int gameID) throws Exception {
+        wsClient.send(gson.toJson(new ResignCommand(authToken, gameID), ResignCommand.class));
+    }
 }

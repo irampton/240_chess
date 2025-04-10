@@ -44,16 +44,13 @@ public class WSServer {
         UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
         AuthData auth;
         GameData game;
+        ChessGame.TeamColor playerColor;
         try {
             switch (command.getCommandType()) {
                 case CONNECT:
                     auth = checkAuth(command.getAuthToken());
                     ConnectCommand connectCommand = gson.fromJson(message, ConnectCommand.class);
-                    try {
-                        game = gameDAO.getGame(connectCommand.getGameID());
-                    } catch (Exception e) {
-                        throw new Exception("Invalid game");
-                    }
+                    game = getGameData(command);
                     switch (connectCommand.getType()) {
                         case BLACK:
                             if (!game.getBlackUsername().equals(auth.getUsername())) {
@@ -96,39 +93,19 @@ public class WSServer {
                     break;
                 case MAKE_MOVE:
                     auth = checkAuth(command.getAuthToken());
-                    try {
-                        game = gameDAO.getGame(command.getGameID());
-                    } catch (Exception e) {
-                        throw new Exception("Invalid game");
-                    }
+                    game = getGameData(command);
 
                     if (game.getGameOver()) {
                         throw new Exception("Game over");
                     }
 
-                    ChessGame.TeamColor playerColor;
-                    // Make sure user is authorized to make a move
-                    if (auth.getUsername().equalsIgnoreCase(game.getWhiteUsername())) {
-                        playerColor = ChessGame.TeamColor.WHITE;
-                    } else if (auth.getUsername().equalsIgnoreCase(game.getBlackUsername())) {
-                        playerColor = ChessGame.TeamColor.BLACK;
-                    } else {
-                        throw new Exception("You cannon make a move. You are not a player in this game.");
-                    }
-
-                    if (playerColor != game.getGame().getTeamTurn()) {
-                        throw new Exception("It is not your turn.");
-                    }
+                    playerColor = getTeamColor(auth, game);
 
                     MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
                     ChessMove playerMove = moveCommand.getMove();
 
                     game.getGame().makeMove(playerMove);
-                    try {
-                        gameDAO.updateGame(game);
-                    } catch (Exception e) {
-                        throw new Exception("Error saving game data");
-                    }
+                    saveGameData(game);
                     broadcastToGame(moveCommand.getGameID(), gson.toJson(new LoadGameMessage(game.getGame())));
                     String moveMessage = playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black";
                     moveMessage += " moved from " + friendlyPosition(playerMove.getStartPosition())
@@ -139,11 +116,22 @@ public class WSServer {
                 case LEAVE:
                     auth = checkAuth(command.getAuthToken());
                     LeaveCommand leaveMsg = gson.fromJson(message, LeaveCommand.class);
-                    broadcastToGame(leaveMsg.getGameID(),
+                    broadcastToOtherInGame(leaveMsg.getGameID(), session,
                             gson.toJson(new NotificationMessage(auth.getUsername() + " has left the game")));
                     removeSession(session);
                     break;
                 case RESIGN:
+                    auth = checkAuth(command.getAuthToken());
+                    game = getGameData(command);
+                    playerColor = getTeamColor(auth, game);
+
+                    game.setGameOver(true);
+                    saveGameData(game);
+
+                    broadcastToGame(command.getGameID(),
+                            gson.toJson(new NotificationMessage(auth.getUsername() + "("
+                                   + (playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black")
+                                    + ") has resigned")));
                     break;
                 default:
                     throw new Exception("Invalid Command");
@@ -152,6 +140,41 @@ public class WSServer {
             //e.printStackTrace();
             session.getRemote().sendString(gson.toJson(new ErrorMessage(e.getMessage())));
         }
+    }
+
+    private void saveGameData(GameData game) throws Exception {
+        try {
+            gameDAO.updateGame(game);
+        } catch (Exception e) {
+            throw new Exception("Error saving game data");
+        }
+    }
+
+    private GameData getGameData(UserGameCommand command) throws Exception {
+        GameData game;
+        try {
+            game = gameDAO.getGame(command.getGameID());
+        } catch (Exception e) {
+            throw new Exception("Invalid game");
+        }
+        return game;
+    }
+
+    private static ChessGame.TeamColor getTeamColor(AuthData auth, GameData game) throws Exception {
+        ChessGame.TeamColor playerColor;
+        // Make sure user is authorized to make a move
+        if (auth.getUsername().equalsIgnoreCase(game.getWhiteUsername())) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else if (auth.getUsername().equalsIgnoreCase(game.getBlackUsername())) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        } else {
+            throw new Exception("You cannon make a move. You are not a player in this game.");
+        }
+
+        if (playerColor != game.getGame().getTeamTurn()) {
+            throw new Exception("It is not your turn.");
+        }
+        return playerColor;
     }
 
     @OnWebSocketError

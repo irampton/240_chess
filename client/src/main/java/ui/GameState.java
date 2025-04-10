@@ -357,9 +357,9 @@ public class GameState {
                 case "leave":
                     serverFacade.leaveGame(gameID);
                     currentState = State.LOGGED_IN;
-                    suppressNextOutput = true;
                     break;
                 case "resign":
+                    serverFacade.resignGame(gameID);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid command");
