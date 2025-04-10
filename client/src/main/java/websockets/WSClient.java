@@ -41,6 +41,7 @@ public class WSClient extends Endpoint {
                 switch (msg.getServerMessageType()) {
                     case LOAD_GAME:
                         // TODO draw chess board
+                        System.out.println("Loading game...");
                         break;
                     case ERROR:
                         ErrorMessage err = gson.fromJson(message, ErrorMessage.class);

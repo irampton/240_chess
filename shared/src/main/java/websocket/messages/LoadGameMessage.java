@@ -5,12 +5,12 @@ import chess.ChessGame;
 public class LoadGameMessage extends ServerMessage {
     private final ChessGame game;
 
-    LoadGameMessage(ChessGame game) {
+    public LoadGameMessage(ChessGame game) {
         super(ServerMessageType.LOAD_GAME);
         this.game = game;
     }
 
-    ChessGame getBoard() {
+    public ChessGame getGame() {
         return game;
     }
 }
