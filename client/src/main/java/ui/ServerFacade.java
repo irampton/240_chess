@@ -1,7 +1,10 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.*;
+import websockets.WSClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import websocket.commands.*;
+import websocket.commands.ConnectCommand.CommandType.*;
+
 public class ServerFacade {
+    // gson
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer())
+            .create();
+
+    private WSClient wsClient;
+
     // Class-level variables for server port and URL
     private static final int DEFAULT_PORT = 8080;
     private static final String DEFAULT_URL = "http://localhost";
@@ -28,6 +41,11 @@ public class ServerFacade {
         }
         if (serverUrl != null && !serverUrl.isEmpty()) {
             this.serverUrl = serverUrl;
+        }
+        try {
+            wsClient = new WSClient();
+        } catch (Exception e) {
+            //fail silently
         }
     }
 
@@ -271,6 +289,10 @@ public class ServerFacade {
             }
             throw new Exception("Error creating game");
         }
+    }
+
+    public void observeGame(int gameID) throws Exception {
+        wsClient.send(gson.toJson(new ConnectCommand(authToken, gameID, ConnectCommand.CommandType.OBSERVER)));
     }
 
 }

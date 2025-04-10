@@ -5,7 +5,6 @@ import chess.ChessGame;
 import model.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -192,6 +191,20 @@ public class GameState {
                 break;
             case "observe":
                 //currentState = State.IN_GAME;
+                if (command.length != 2) {
+                    throw new IllegalArgumentException("Invalid number of arguments. Expected 2 arguments.");
+                }
+                int gameNumber;
+                try {
+                    gameNumber = Integer.parseInt(command[1]);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Invalid game number");
+                }
+                try {
+                    serverFacade.observeGame(gameNumber);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Server Error. Please try again.");
+                }
                 ChessBoard board = new ChessBoard();
                 board.resetBoard();
                 boardDrawer.drawBoard(board, ChessGame.TeamColor.WHITE);
