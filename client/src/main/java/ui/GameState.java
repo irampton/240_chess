@@ -219,9 +219,6 @@ public class GameState {
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Server Error. Please try again.");
                 }
-                ChessBoard board = new ChessBoard();
-                board.resetBoard();
-                boardDrawer.drawBoard(board, ChessGame.TeamColor.WHITE);
                 break;
             case "quit":
                 System.out.println("Goodbye!");

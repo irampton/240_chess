@@ -1,5 +1,6 @@
 package websockets;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,6 +12,8 @@ import java.util.Scanner;
 
 import com.google.gson.Gson;
 import model.CreateGameRequest;
+import ui.DrawChessBoard;
+import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
@@ -22,6 +25,9 @@ public class WSClient extends Endpoint {
             .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer())
             .create();
     private Boolean suppressNextOutput = false;
+    private ConnectCommand.CommandType role;
+    private final DrawChessBoard boardDrawer = new DrawChessBoard();
+
 
     public static void main(String[] args) throws Exception {
         var ws = new WSClient();
@@ -41,8 +47,16 @@ public class WSClient extends Endpoint {
                 System.out.println();
                 switch (msg.getServerMessageType()) {
                     case LOAD_GAME:
-                        // TODO draw chess board
-                        System.out.println("Loading game...");
+                        LoadGameMessage gameMessage = gson.fromJson(message, LoadGameMessage.class);
+                        switch (role) {
+                            case WHITE:
+                            case OBSERVER:
+                                boardDrawer.drawBoard(gameMessage.getGame().getBoard(), ChessGame.TeamColor.WHITE);
+                                break;
+                            case BLACK:
+                                boardDrawer.drawBoard(gameMessage.getGame().getBoard(), ChessGame.TeamColor.BLACK);
+                                break;
+                        }
                         break;
                     case ERROR:
                         ErrorMessage err = gson.fromJson(message, ErrorMessage.class);
@@ -61,7 +75,7 @@ public class WSClient extends Endpoint {
                         System.out.println("Unknown message from server");
                         System.out.println(RESET_TEXT_COLOR);
                 }
-                if(!suppressNextOutput) {
+                if (!suppressNextOutput) {
                     System.out.print("[IN_GAME] >>> ");
                 } else {
                     System.out.print("[LOGGED_IN] >>> ");
@@ -80,5 +94,9 @@ public class WSClient extends Endpoint {
 
     public void suppressNextOutput() {
         suppressNextOutput = true;
+    }
+
+    public void setRole(ConnectCommand.CommandType role) {
+        this.role = role;
     }
 }

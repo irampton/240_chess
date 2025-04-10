@@ -290,14 +290,16 @@ public class ServerFacade {
                     throw new Exception("Internal Server Error");
             }
             throw new Exception("Error creating game");
-        } else{
+        } else {
             // We've joined the game, now let's play!
-            wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ?  ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
+            wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
+            wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK);
         }
     }
 
     public void observeGame(int gameID) throws Exception {
         wsClient.send(gson.toJson(new ConnectCommand(authToken, gameID, ConnectCommand.CommandType.OBSERVER)));
+        wsClient.setRole(ConnectCommand.CommandType.OBSERVER);
     }
 
     public void leaveGame(int gameID) throws Exception {
