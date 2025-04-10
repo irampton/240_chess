@@ -1,5 +1,7 @@
 package serverModel;
 
+import model.GameData;
+
 public class GameDataDTO {
     private int gameID;
     private String whiteUsername;

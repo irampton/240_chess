@@ -353,6 +353,7 @@ public class GameState {
                     ChessPosition moveEnd = parseChessPosition(command[2]);
 
                     serverFacade.makeMove(new ChessMove(moveStart, moveEnd, null), gameID);
+                    printInGame = true;
                     break;
                 case "leave":
                     serverFacade.leaveGame(gameID);

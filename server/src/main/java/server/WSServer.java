@@ -130,7 +130,7 @@ public class WSServer {
             }
         } catch (Exception e) {
             //e.printStackTrace();
-            session.getRemote().sendString(gson.toJson(new ErrorMessage("Invalid Command")));
+            session.getRemote().sendString(gson.toJson(new ErrorMessage(e.getMessage())));
         }
     }
 

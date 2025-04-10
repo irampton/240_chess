@@ -84,7 +84,7 @@ public class ChessGame {
             throw new InvalidMoveException("No existing piece found");
         } else {
             if (piece.getTeamColor() != currentTeam) {
-                throw new InvalidMoveException("It's not your turn");
+                throw new InvalidMoveException("It's not that piece's turn");
             }
             Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
             if (!validMoves.contains(move)) {
