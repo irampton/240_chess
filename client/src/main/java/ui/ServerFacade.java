@@ -292,10 +292,14 @@ public class ServerFacade {
             throw new Exception("Error creating game");
         } else {
             // We've joined the game, now let's play!
-            wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
-            wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK);
-            wsClient.suppressNextOutput();
+            joinGameWS(joinRequest);
         }
+    }
+
+    public void joinGameWS(GameJoinRequest joinRequest) throws Exception {
+        wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
+        wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK);
+        wsClient.suppressNextOutput();
     }
 
     public void observeGame(int gameID) throws Exception {
@@ -306,7 +310,7 @@ public class ServerFacade {
 
     public void leaveGame(int gameID) throws Exception {
         wsClient.send(gson.toJson(new LeaveCommand(authToken, gameID)));
-        wsClient.suppressNextOutput();
+        wsClient.showLoggedInMessages();
     }
 
     public void redrawBoard(){

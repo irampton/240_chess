@@ -26,6 +26,7 @@ public class WSClient extends Endpoint {
             .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer())
             .create();
     private Boolean suppressNextOutput = false;
+    private Boolean showLoggedInMessages = false;
     private ConnectCommand.CommandType role;
     private final DrawChessBoard boardDrawer = new DrawChessBoard();
     private ChessGame chessGame;
@@ -72,9 +73,13 @@ public class WSClient extends Endpoint {
                 }
                 System.out.print(RESET_TEXT_COLOR);
                 if (!suppressNextOutput) {
-                    System.out.print("[IN_GAME] >>> ");
+                    if (showLoggedInMessages) {
+                        System.out.print("[LOGGED_IN] >>> ");
+                        showLoggedInMessages = false;
+                    } else {
+                        System.out.print("[IN_GAME] >>> ");
+                    }
                 } else {
-                    System.out.print("[LOGGED_IN] >>> ");
                     suppressNextOutput = false;
                 }
             }
@@ -90,6 +95,10 @@ public class WSClient extends Endpoint {
 
     public void suppressNextOutput() {
         suppressNextOutput = true;
+    }
+
+    public void showLoggedInMessages() {
+        showLoggedInMessages = true;
     }
 
     public void setRole(ConnectCommand.CommandType role) {

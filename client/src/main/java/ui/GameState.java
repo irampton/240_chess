@@ -24,6 +24,7 @@ public class GameState {
     private Integer gameID;
     private Boolean suppressNextOutput = false;
     private Boolean printInGame = false;
+    private String username;
 
     public GameState() {
         currentState = State.LOGGED_OUT;
@@ -123,6 +124,7 @@ public class GameState {
                     System.out.print(command[1]);
                     System.out.println();
                     currentState = State.LOGGED_IN;
+                    username = command[1];
                     break;
                 case "clear":
                     try {
@@ -303,6 +305,14 @@ public class GameState {
                 : ChessGame.TeamColor.BLACK;
         if (
                 (teamColor == ChessGame.TeamColor.WHITE
+                        && game.getWhiteUsername().equalsIgnoreCase(username))
+                        || (teamColor == ChessGame.TeamColor.BLACK
+                        && game.getBlackUsername().equalsIgnoreCase(username))
+        ) {
+            // User is already in game, let them join
+            serverFacade.joinGameWS(new GameJoinRequest(command[2].toUpperCase(), gameID));
+        } else if (
+                (teamColor == ChessGame.TeamColor.WHITE
                         && game.getWhiteUsername() != null)
                         || (teamColor == ChessGame.TeamColor.BLACK
                         && game.getBlackUsername() != null)
@@ -310,9 +320,6 @@ public class GameState {
             throw new IllegalArgumentException("Color already taken");
         } else {
             serverFacade.joinGame(new GameJoinRequest(command[2].toUpperCase(), gameID));
-            ChessBoard board = new ChessBoard();
-            board.resetBoard();
-            boardDrawer.drawBoard(board, teamColor);
         }
     }
 
