@@ -17,6 +17,8 @@ import java.util.Map;
 import websocket.commands.*;
 import websocket.commands.ConnectCommand.CommandType.*;
 
+import static chess.ChessGame.TeamColor.WHITE;
+
 public class ServerFacade {
     // gson
     private Gson gson = new GsonBuilder()
@@ -288,6 +290,9 @@ public class ServerFacade {
                     throw new Exception("Internal Server Error");
             }
             throw new Exception("Error creating game");
+        } else{
+            // We've joined the game, now let's play!
+            wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ?  ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
         }
     }
 

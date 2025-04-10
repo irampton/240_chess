@@ -182,16 +182,14 @@ public class GameState {
             case "join":
                 try {
                     joinGameCommand(command);
+                    currentState = State.IN_GAME;
                 } catch (Exception e) {
                     System.out.print(SET_TEXT_COLOR_RED);
                     System.out.println(e.getMessage());
                     System.out.println(RESET_TEXT_COLOR);
                 }
-                //currentState = State.IN_GAME;
                 break;
             case "observe":
-                currentState = State.IN_GAME;
-
                 if (command.length != 2) {
                     throw new IllegalArgumentException("Invalid number of arguments. Expected 2 arguments.");
                 }
@@ -211,6 +209,7 @@ public class GameState {
 
                 try {
                     serverFacade.observeGame(gameID);
+                    currentState = State.IN_GAME;
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Server Error. Please try again.");
                 }

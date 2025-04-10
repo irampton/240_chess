@@ -42,8 +42,20 @@ public class WSServer {
                     GameData game;
                     try {
                         game = gameDAO.getGame(connectCommand.getGameID());
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         throw new Exception("Invalid game");
+                    }
+                    switch (connectCommand.getType()) {
+                        case BLACK:
+                            if (!game.getBlackUsername().equals(auth.getUsername())) {
+                                throw new Exception("Unauthorized");
+                            }
+                            break;
+                        case WHITE:
+                            if (!game.getWhiteUsername().equals(auth.getUsername())) {
+                                throw new Exception("Unauthorized");
+                            }
+                            break;
                     }
                     System.out.print("User: " + auth.getUsername() + " connected to game " + game.getGameName() + " as ");
                     switch (connectCommand.getType()) {
