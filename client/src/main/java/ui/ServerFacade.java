@@ -304,8 +304,13 @@ public class ServerFacade {
     }
 
     public void joinGameWS(GameJoinRequest joinRequest) throws Exception {
-        wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
-        wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK);
+        wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(),
+                joinRequest.getPlayerColor().equalsIgnoreCase("white")
+                        ? ConnectCommand.CommandType.WHITE
+                        : ConnectCommand.CommandType.BLACK)));
+        wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white")
+                ? ConnectCommand.CommandType.WHITE
+                : ConnectCommand.CommandType.BLACK);
         wsClient.showNextOutput();
     }
 
