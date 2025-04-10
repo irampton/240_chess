@@ -70,6 +70,7 @@ public class WSClient extends Endpoint {
                         System.out.println("Unknown message from server");
                         System.out.println(RESET_TEXT_COLOR);
                 }
+                System.out.print(RESET_TEXT_COLOR);
                 if (!suppressNextOutput) {
                     System.out.print("[IN_GAME] >>> ");
                 } else {

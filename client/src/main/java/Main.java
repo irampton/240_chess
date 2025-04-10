@@ -1,6 +1,8 @@
 import chess.*;
 import ui.GameState;
 
+import static ui.EscapeSequences.RESET_TEXT_COLOR;
+
 
 public class Main {
 
@@ -12,6 +14,7 @@ public class Main {
 
         while (true) {
             gameState.getCommand();
+            System.out.println(RESET_TEXT_COLOR);
         }
     }
 }
