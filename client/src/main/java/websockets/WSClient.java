@@ -2,12 +2,14 @@ package websockets;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.ChessGameDeserializer;
 
 import javax.websocket.*;
 import java.net.URI;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
@@ -109,10 +111,22 @@ public class WSClient extends Endpoint {
         switch (role) {
             case WHITE:
             case OBSERVER:
-                boardDrawer.drawBoard(chessGame.getBoard(), ChessGame.TeamColor.WHITE);
+                boardDrawer.drawBoard(chessGame.getBoard(), ChessGame.TeamColor.WHITE, new LinkedList<>());
                 break;
             case BLACK:
-                boardDrawer.drawBoard(chessGame.getBoard(), ChessGame.TeamColor.BLACK);
+                boardDrawer.drawBoard(chessGame.getBoard(), ChessGame.TeamColor.BLACK, new LinkedList<>());
+                break;
+        }
+    }
+
+    public void drawHighlightedChessBoard(ChessPosition startPosition) {
+        switch (role) {
+            case WHITE:
+            case OBSERVER:
+                boardDrawer.drawHighlightedChessBoard(chessGame.getBoard(), ChessGame.TeamColor.WHITE, startPosition);
+                break;
+            case BLACK:
+                boardDrawer.drawHighlightedChessBoard(chessGame.getBoard(), ChessGame.TeamColor.BLACK, startPosition);
                 break;
         }
     }

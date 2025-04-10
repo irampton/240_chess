@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.*;
@@ -313,8 +314,12 @@ public class ServerFacade {
         wsClient.showLoggedInMessages();
     }
 
-    public void redrawBoard(){
+    public void redrawBoard() {
         wsClient.drawChessBoard();
+    }
+
+    public void drawHighlightedChessboard(ChessPosition startPosition) {
+        wsClient.drawHighlightedChessBoard(startPosition);
     }
 
 }

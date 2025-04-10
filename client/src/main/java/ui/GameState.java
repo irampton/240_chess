@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPosition;
 import model.*;
 
 import java.util.List;
@@ -327,41 +328,7 @@ public class GameState {
         try {
             switch (command[0].toLowerCase()) {
                 case "help":
-                    // Help
-                    System.out.print(SET_TEXT_COLOR_BLUE);
-                    System.out.print("Help\t\t\t\t\t\t\t\t");
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                    System.out.print("- List all available commands\n");
-                    // Redraw
-                    System.out.print(SET_TEXT_COLOR_BLUE);
-                    System.out.print("Redraw\t\t\t\t\t\t\t\t");
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                    System.out.print("- Redraw the chessboard\n");
-                    // Highlight
-                    System.out.print(SET_TEXT_COLOR_BLUE);
-                    System.out.print("Highlight\t");
-                    System.out.print(SET_TEXT_COLOR_CYAN);
-                    System.out.print("<LOCATION>\t\t\t\t");
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                    System.out.print("- Show legal moves\n");
-                    // Move
-                    System.out.print(SET_TEXT_COLOR_BLUE);
-                    System.out.print("Move\t\t");
-                    System.out.print(SET_TEXT_COLOR_CYAN);
-                    System.out.print("<LOCATION> <LOCATION>\t\t");
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                    System.out.print("- Make a move\n");
-                    // Leave
-                    System.out.print(SET_TEXT_COLOR_BLUE);
-                    System.out.print("Leave\t\t\t\t\t\t\t\t");
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                    System.out.print("- Leave the game\n");
-                    // Resign
-                    System.out.print(SET_TEXT_COLOR_BLUE);
-                    System.out.print("Resign\t\t\t\t\t\t\t\t");
-                    System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
-                    System.out.print("- Resign from the game\n");
-
+                    printInGameHelp();
                     printInGame = true;
                     break;
                 case "redraw":
@@ -369,6 +336,13 @@ public class GameState {
                     printInGame = true;
                     break;
                 case "highlight":
+                    if (command.length != 2) {
+                        throw new IllegalArgumentException("Invalid number of arguments. Expected 2 arguments.");
+                    }
+
+                    ChessPosition startPosition = parseChessPosition(command[1]);
+                    serverFacade.drawHighlightedChessboard(startPosition);
+                    printInGame = true;
                     break;
                 case "move":
                     break;
@@ -388,6 +362,70 @@ public class GameState {
             System.out.println(RESET_TEXT_COLOR);
             printInGame = true;
         }
+    }
+
+    private static void printInGameHelp() {
+        // Help
+        System.out.print(SET_TEXT_COLOR_BLUE);
+        System.out.print("Help\t\t\t\t\t\t\t\t");
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+        System.out.print("- List all available commands\n");
+        // Redraw
+        System.out.print(SET_TEXT_COLOR_BLUE);
+        System.out.print("Redraw\t\t\t\t\t\t\t\t");
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+        System.out.print("- Redraw the chessboard\n");
+        // Highlight
+        System.out.print(SET_TEXT_COLOR_BLUE);
+        System.out.print("Highlight\t");
+        System.out.print(SET_TEXT_COLOR_CYAN);
+        System.out.print("<LOCATION>\t\t\t\t");
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+        System.out.print("- Show legal moves\n");
+        // Move
+        System.out.print(SET_TEXT_COLOR_BLUE);
+        System.out.print("Move\t\t");
+        System.out.print(SET_TEXT_COLOR_CYAN);
+        System.out.print("<LOCATION> <LOCATION>\t\t");
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+        System.out.print("- Make a move\n");
+        // Leave
+        System.out.print(SET_TEXT_COLOR_BLUE);
+        System.out.print("Leave\t\t\t\t\t\t\t\t");
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+        System.out.print("- Leave the game\n");
+        // Resign
+        System.out.print(SET_TEXT_COLOR_BLUE);
+        System.out.print("Resign\t\t\t\t\t\t\t\t");
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_DARK_GREEN);
+        System.out.print("- Resign from the game\n");
+    }
+
+    public static ChessPosition parseChessPosition(String pos) throws Exception {
+        // Check that the input is not null and exactly one letter and 1 number
+        if (pos == null || pos.length() != 2) {
+            throw new IllegalArgumentException(
+                    "Invalid input: must be a valid chess position."
+            );
+        }
+        char colChar = Character.toLowerCase(pos.charAt(0));
+        if (colChar < 'a' || colChar > 'h') {
+            throw new IllegalArgumentException(
+                    "Invalid column: '" + pos.charAt(0) + "'. Must be between 'a' and 'h'."
+            );
+        }
+        char rowChar = pos.charAt(1);
+        if (rowChar < '1' || rowChar > '8') {
+            throw new IllegalArgumentException(
+                    "Invalid row: '" + rowChar + "'. Must be between '1' and '8'."
+            );
+        }
+
+        // Get row and col
+        int col = colChar - 'a' + 1;
+        int row = rowChar - '0';
+
+        return new ChessPosition(row, col);
     }
 
 }

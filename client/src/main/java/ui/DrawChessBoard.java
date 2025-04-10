@@ -1,31 +1,42 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
 
-    public void drawBoard(ChessBoard chessBoard, ChessGame.TeamColor teamColor) {
+    public void drawBoard(ChessBoard chessBoard, ChessGame.TeamColor teamColor, Collection<ChessPosition> legalMoves) {
         // for each position on the board
         printRowLetters(teamColor);
         for (int row = 1; row <= 8; row++) {
             printColumnNumber(row, teamColor);
             for (int column = 1; column <= 8; column++) {
+                ChessPosition pos = new ChessPosition(
+                        teamColor == ChessGame.TeamColor.WHITE ? (9 - row) : row,
+                        column);
+                boolean legalMove = legalMoves.contains(pos);
+
                 // Background color
                 if ((row + column) % 2 == 0) {
-                    System.out.print(SET_BG_COLOR_LIGHT_BROWN);
+                    if (legalMove) {
+                        System.out.print(SET_BG_COLOR_LIGHT_GREEN);
+                    } else {
+                        System.out.print(SET_BG_COLOR_LIGHT_BROWN);
+                    }
                 } else {
-                    System.out.print(SET_BG_COLOR_DARK_BROWN);
+                    if (legalMove) {
+                        System.out.print(SET_BG_COLOR_DARK_GREEN);
+                    } else {
+                        System.out.print(SET_BG_COLOR_DARK_BROWN);
+                    }
                 }
 
                 // Get Piece
-                ChessPosition pos = new ChessPosition(teamColor == ChessGame.TeamColor.WHITE
-                        ? row
-                        : (9 - row), teamColor == ChessGame.TeamColor.WHITE ? column : (9 - column));
                 ChessPiece piece = chessBoard.getPiece(pos);
                 if (piece == null) {
                     System.out.print(EMPTY);
@@ -117,5 +128,21 @@ public class DrawChessBoard {
 
         System.out.print(RESET_BG_COLOR);
         System.out.println();
+    }
+
+    public void drawHighlightedChessBoard(ChessBoard chessBoard, ChessGame.TeamColor teamColor, ChessPosition startPosition) {
+        ChessGame game = new ChessGame();
+        game.setBoard(chessBoard);
+        game.setTeamTurn(teamColor);
+
+        // Get the legal moves, then grab the end positions
+        Collection<ChessMove> chessMoves = game.validMoves(startPosition);
+        Collection<ChessPosition> legalMoves = new ArrayList<>();
+
+        for (ChessMove move : chessMoves) {
+            legalMoves.add(move.getEndPosition());
+        }
+
+        drawBoard(chessBoard, teamColor, legalMoves);
     }
 }
