@@ -8,6 +8,7 @@ public class GameData {
     private String blackUsername;
     private String gameName;
     private ChessGame game;
+    private Boolean gameOver;
 
     // Constructor
     public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
@@ -16,6 +17,7 @@ public class GameData {
         this.blackUsername = blackUsername;
         this.gameName = gameName;
         this.game = game;
+        this.gameOver = false;
     }
 
     // Getters and Setters
@@ -57,6 +59,14 @@ public class GameData {
 
     public void setGame(ChessGame game) {
         this.game = game;
+    }
+
+    public Boolean getGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(Boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
     @Override
