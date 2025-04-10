@@ -1,23 +1,18 @@
 package websockets;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import model.ChessGameDeserializer;
 
 import javax.websocket.*;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-import com.google.gson.Gson;
-import model.CreateGameRequest;
-import model.GameData;
+import model.ChessGameDeserializer;
 import ui.DrawChessBoard;
 import websocket.commands.ConnectCommand;
-import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
 import static ui.EscapeSequences.*;
