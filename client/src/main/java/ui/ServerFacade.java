@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -300,13 +301,13 @@ public class ServerFacade {
     public void joinGameWS(GameJoinRequest joinRequest) throws Exception {
         wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
         wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK);
-        wsClient.suppressNextOutput();
+        wsClient.showNextOutput();
     }
 
     public void observeGame(int gameID) throws Exception {
         wsClient.send(gson.toJson(new ConnectCommand(authToken, gameID, ConnectCommand.CommandType.OBSERVER)));
         wsClient.setRole(ConnectCommand.CommandType.OBSERVER);
-        wsClient.suppressNextOutput();
+        wsClient.showNextOutput();
     }
 
     public void leaveGame(int gameID) throws Exception {
@@ -320,6 +321,11 @@ public class ServerFacade {
 
     public void drawHighlightedChessboard(ChessPosition startPosition) {
         wsClient.drawHighlightedChessBoard(startPosition);
+    }
+
+    public void makeMove(ChessMove move, int gameID) throws Exception {
+        wsClient.send(gson.toJson(new MakeMoveCommand(authToken, gameID, move), MakeMoveCommand.class));
+        wsClient.showNextOutput();
     }
 
 }

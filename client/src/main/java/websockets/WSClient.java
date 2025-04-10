@@ -27,7 +27,7 @@ public class WSClient extends Endpoint {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer())
             .create();
-    private Boolean suppressNextOutput = false;
+    private Boolean showNextOutput = false;
     private Boolean showLoggedInMessages = false;
     private ConnectCommand.CommandType role;
     private final DrawChessBoard boardDrawer = new DrawChessBoard();
@@ -61,28 +61,28 @@ public class WSClient extends Endpoint {
                         System.out.print(SET_TEXT_COLOR_RED);
                         System.out.println(err.getError());
                         System.out.println(RESET_TEXT_COLOR);
+                        showNextOutput = true;
                         break;
                     case NOTIFICATION:
                         NotificationMessage notificationMessage = gson.fromJson(message, NotificationMessage.class);
                         System.out.print(SET_TEXT_COLOR_BLACK);
                         System.out.println(notificationMessage.getNotification());
                         System.out.println(RESET_TEXT_COLOR);
+                        showNextOutput = true;
                         break;
                     default:
                         System.out.print(SET_TEXT_COLOR_RED);
                         System.out.println("Unknown message from server");
                         System.out.println(RESET_TEXT_COLOR);
+                        showNextOutput = true;
                 }
                 System.out.print(RESET_TEXT_COLOR);
-                if (!suppressNextOutput) {
-                    if (showLoggedInMessages) {
-                        System.out.print("[LOGGED_IN] >>> ");
-                        showLoggedInMessages = false;
-                    } else {
-                        System.out.print("[IN_GAME] >>> ");
-                    }
-                } else {
-                    suppressNextOutput = false;
+                if (showLoggedInMessages) {
+                    System.out.print("[LOGGED_IN] >>> ");
+                    showLoggedInMessages = false;
+                } else if (showNextOutput) {
+                    System.out.print("[IN_GAME] >>> ");
+                    showNextOutput = false;
                 }
             }
         });
@@ -95,8 +95,8 @@ public class WSClient extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void suppressNextOutput() {
-        suppressNextOutput = true;
+    public void showNextOutput() {
+        showNextOutput = true;
     }
 
     public void showLoggedInMessages() {

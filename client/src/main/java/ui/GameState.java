@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import model.*;
 
@@ -305,9 +306,9 @@ public class GameState {
                 ? ChessGame.TeamColor.WHITE
                 : ChessGame.TeamColor.BLACK;
         if (
-                (teamColor == ChessGame.TeamColor.WHITE
+                (teamColor == ChessGame.TeamColor.WHITE && game.getWhiteUsername() != null
                         && game.getWhiteUsername().equalsIgnoreCase(username))
-                        || (teamColor == ChessGame.TeamColor.BLACK
+                        || (teamColor == ChessGame.TeamColor.BLACK && game.getBlackUsername() != null
                         && game.getBlackUsername().equalsIgnoreCase(username))
         ) {
             // User is already in game, let them join
@@ -345,6 +346,13 @@ public class GameState {
                     printInGame = true;
                     break;
                 case "move":
+                    if (command.length != 3) {
+                        throw new IllegalArgumentException("Invalid number of arguments. Expected 3 arguments.");
+                    }
+                    ChessPosition moveStart = parseChessPosition(command[1]);
+                    ChessPosition moveEnd = parseChessPosition(command[2]);
+
+                    serverFacade.makeMove(new ChessMove(moveStart, moveEnd, null), gameID);
                     break;
                 case "leave":
                     serverFacade.leaveGame(gameID);
@@ -357,6 +365,7 @@ public class GameState {
                     throw new IllegalArgumentException("Invalid command");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.print(SET_TEXT_COLOR_RED);
             System.out.println(e.getMessage());
             System.out.println(RESET_TEXT_COLOR);
