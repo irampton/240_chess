@@ -30,8 +30,7 @@ public class WSServer {
     private final AuthDAO authDAO = new AuthDAO();
     private final GameDAO gameDAO = new GameDAO();
 
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer()).create();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(ChessGame.class, new ChessGameDeserializer()).create();
 
     private static final Map<Integer, Set<Session>> gameSessions = new ConcurrentHashMap<>();
     private static final Map<Session, Integer> sessionToGameMap = new ConcurrentHashMap<>();
@@ -41,55 +40,43 @@ public class WSServer {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
+        //System.out.println(message);
         UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
         AuthData auth;
         GameData game;
-        ChessGame.TeamColor playerColor;
+        ChessGame.TeamColor playerColor = null;
         try {
             switch (command.getCommandType()) {
                 case CONNECT:
                     auth = checkAuth(command.getAuthToken());
-                    ConnectCommand connectCommand = gson.fromJson(message, ConnectCommand.class);
                     game = getGameData(command);
-                    switch (connectCommand.getType()) {
-                        case BLACK:
-                            if (!game.getBlackUsername().equals(auth.getUsername())) {
-                                throw new Exception("Unauthorized");
-                            }
-                            break;
-                        case WHITE:
-                            if (!game.getWhiteUsername().equals(auth.getUsername())) {
-                                throw new Exception("Unauthorized");
-                            }
-                            break;
+
+                    if (auth.getUsername().equalsIgnoreCase(game.getWhiteUsername())) {
+                        playerColor = ChessGame.TeamColor.WHITE;
+                    } else if (auth.getUsername().equalsIgnoreCase(game.getBlackUsername())) {
+                        playerColor = ChessGame.TeamColor.BLACK;
                     }
+
                     String joinMessage = auth.getUsername() + " joined the game as ";
-                    System.out.print("User: " + auth.getUsername()
-                            + " connected to game " + game.getGameName() + " as ");
-                    switch (connectCommand.getType()) {
-                        case BLACK:
-                            System.out.print("black");
-                            joinMessage += "black";
-                            break;
-                        case WHITE:
-                            System.out.print("white");
-                            joinMessage += "white";
-                            break;
-                        case OBSERVER:
-                            System.out.print("an observer");
-                            joinMessage += "an observer";
-                            break;
+                    //System.out.print("User: " + auth.getUsername()
+                    //        + " connected to game " + game.getGameName() + " as ");
+                    if (playerColor == ChessGame.TeamColor.BLACK) {
+                        //System.out.print("black");
+                        joinMessage += "black";
+                    } else if (playerColor == ChessGame.TeamColor.WHITE) {
+                        joinMessage += "white";
+                    } else {
+                        //System.out.print("an observer");
+                        joinMessage += "an observer";
                     }
                     System.out.print("\n");
 
-                    gameSessions.computeIfAbsent(connectCommand.getGameID(), k -> new CopyOnWriteArraySet<>())
-                            .add(session);
-                    sessionToGameMap.put(session, connectCommand.getGameID());
+                    gameSessions.computeIfAbsent(command.getGameID(), k -> new CopyOnWriteArraySet<>()).add(session);
+                    sessionToGameMap.put(session, command.getGameID());
 
                     session.getRemote().sendString(gson.toJson(new LoadGameMessage(game.getGame())));
 
-                    broadcastToOtherInGame(connectCommand.getGameID(), session,
-                            gson.toJson(new NotificationMessage(joinMessage)));
+                    broadcastToOtherInGame(command.getGameID(), session, gson.toJson(new NotificationMessage(joinMessage)));
                     break;
                 case MAKE_MOVE:
                     auth = checkAuth(command.getAuthToken());
@@ -100,6 +87,9 @@ public class WSServer {
                     }
 
                     playerColor = getTeamColor(auth, game);
+                    if (playerColor != game.getGame().getTeamTurn()) {
+                        throw new Exception("It is not your turn.");
+                    }
 
                     MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
                     ChessMove playerMove = moveCommand.getMove();
@@ -116,31 +106,43 @@ public class WSServer {
                     broadcastToGame(moveCommand.getGameID(), gson.toJson(new LoadGameMessage(game.getGame())));
 
                     String moveMessage = playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black";
-                    moveMessage += " moved from " + friendlyPosition(playerMove.getStartPosition())
-                            + " to " + friendlyPosition(playerMove.getEndPosition());
+                    moveMessage += " moved from " + friendlyPosition(playerMove.getStartPosition()) + " to " + friendlyPosition(playerMove.getEndPosition());
                     String checkMessage = "";
-                    if(checkmate){
-                        checkMessage += (game.getGame().getTeamTurn()== ChessGame.TeamColor.WHITE ? "White" : "Black")
-                                + " is in checkmate - Game Over\n"
-                                + (playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black")
-                                + " wins!";
-                    } else if(stalemate){
+                    if (checkmate) {
+                        checkMessage += (game.getGame().getTeamTurn() == ChessGame.TeamColor.WHITE ? "White" : "Black") + " is in checkmate - Game Over\n" + (playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black") + " wins!";
+                    } else if (stalemate) {
                         checkMessage += "Stalemate - Game Over";
-                    }else if(check){
-                        checkMessage += (game.getGame().getTeamTurn()== ChessGame.TeamColor.WHITE ? "White" : "Black")
-                                + " is in check";
+                    } else if (check) {
+                        checkMessage += (game.getGame().getTeamTurn() == ChessGame.TeamColor.WHITE ? "White" : "Black") + " is in check";
                     }
-                    moveMessage += "\n" + checkMessage;
+                    //moveMessage += "\n" + checkMessage;
 
-                    broadcastToOtherInGame(moveCommand.getGameID(), session,
-                            gson.toJson(new NotificationMessage(moveMessage)));
-                    session.getRemote().sendString(gson.toJson(new NotificationMessage(checkMessage)));
+                    broadcastToOtherInGame(moveCommand.getGameID(), session, gson.toJson(new NotificationMessage(moveMessage)));
+                    if (checkmate || check || stalemate) {
+                        //session.getRemote().sendString(gson.toJson(new NotificationMessage(checkMessage)));
+                        broadcastToGame(game.getGameID(), gson.toJson(new NotificationMessage(checkMessage)));
+                    }
                     break;
                 case LEAVE:
                     auth = checkAuth(command.getAuthToken());
                     LeaveCommand leaveMsg = gson.fromJson(message, LeaveCommand.class);
-                    broadcastToOtherInGame(leaveMsg.getGameID(), session,
-                            gson.toJson(new NotificationMessage(auth.getUsername() + " has left the game")));
+                    game = getGameData(command);
+
+                    if (auth.getUsername().equalsIgnoreCase(game.getWhiteUsername())) {
+                        playerColor = ChessGame.TeamColor.WHITE;
+                    } else if (auth.getUsername().equalsIgnoreCase(game.getBlackUsername())) {
+                        playerColor = ChessGame.TeamColor.BLACK;
+                    }
+
+                    if (playerColor == ChessGame.TeamColor.WHITE) {
+                        game.setWhiteUsername(null);
+                    } else if (playerColor == ChessGame.TeamColor.BLACK) {
+                        game.setBlackUsername(null);
+                    }
+
+                    saveGameData(game);
+
+                    broadcastToOtherInGame(leaveMsg.getGameID(), session, gson.toJson(new NotificationMessage(auth.getUsername() + " has left the game")));
                     removeSession(session);
                     break;
                 case RESIGN:
@@ -148,20 +150,21 @@ public class WSServer {
                     game = getGameData(command);
                     playerColor = getTeamColor(auth, game);
 
+                    if (game.getGameOver()) {
+                        throw new Exception("Game over");
+                    }
+
                     game.setGameOver(true);
                     saveGameData(game);
 
-                    broadcastToGame(command.getGameID(),
-                            gson.toJson(new NotificationMessage(auth.getUsername() + "("
-                                    + (playerColor == ChessGame.TeamColor.WHITE ? "white" : "black")
-                                    + ") has resigned")));
+                    broadcastToGame(command.getGameID(), gson.toJson(new NotificationMessage(auth.getUsername() + "(" + (playerColor == ChessGame.TeamColor.WHITE ? "white" : "black") + ") has resigned")));
                     break;
                 default:
                     throw new Exception("Invalid Command");
             }
         } catch (Exception e) {
             //e.printStackTrace();
-            session.getRemote().sendString(gson.toJson(new ErrorMessage(e.getMessage())));
+            session.getRemote().sendString(gson.toJson(new ErrorMessage("Invalid Command")));
         }
     }
 
@@ -194,9 +197,6 @@ public class WSServer {
             throw new Exception("You cannot make a move. You are not a player in this game.");
         }
 
-        if (playerColor != game.getGame().getTeamTurn()) {
-            throw new Exception("It is not your turn.");
-        }
         return playerColor;
     }
 
