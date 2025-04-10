@@ -36,7 +36,7 @@ public class GameState {
                 System.out.print("[LOGGED_OUT] >>> ");
                 break;
             case LOGGED_IN:
-                if(!suppressNextOutput) {
+                if (!suppressNextOutput) {
                     System.out.print("[LOGGED_IN] >>> ");
                 } else {
                     suppressNextOutput = false;
@@ -328,8 +328,18 @@ public class GameState {
 
     private void inGameCommands(String[] command) {
         switch (command[0].toLowerCase()) {
+            case "help":
+                break;
+            case "redraw":
+                serverFacade.redrawBoard();
+                System.out.print("[IN_GAME] >>> ");
+                break;
+            case "highlight":
+                break;
+            case "move":
+                break;
             case "leave":
-                try{
+                try {
                     serverFacade.leaveGame(gameID);
                     currentState = State.LOGGED_IN;
                     suppressNextOutput = true;
@@ -338,7 +348,8 @@ public class GameState {
                     System.out.println(e.getMessage());
                     System.out.println(RESET_TEXT_COLOR);
                 }
-
+                break;
+            case "resign":
                 break;
             default:
                 System.out.println("Invalid command");

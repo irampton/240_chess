@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import com.google.gson.Gson;
 import model.CreateGameRequest;
+import model.GameData;
 import ui.DrawChessBoard;
 import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
@@ -27,6 +28,7 @@ public class WSClient extends Endpoint {
     private Boolean suppressNextOutput = false;
     private ConnectCommand.CommandType role;
     private final DrawChessBoard boardDrawer = new DrawChessBoard();
+    private ChessGame chessGame;
 
 
     public static void main(String[] args) throws Exception {
@@ -48,15 +50,8 @@ public class WSClient extends Endpoint {
                 switch (msg.getServerMessageType()) {
                     case LOAD_GAME:
                         LoadGameMessage gameMessage = gson.fromJson(message, LoadGameMessage.class);
-                        switch (role) {
-                            case WHITE:
-                            case OBSERVER:
-                                boardDrawer.drawBoard(gameMessage.getGame().getBoard(), ChessGame.TeamColor.WHITE);
-                                break;
-                            case BLACK:
-                                boardDrawer.drawBoard(gameMessage.getGame().getBoard(), ChessGame.TeamColor.BLACK);
-                                break;
-                        }
+                        chessGame = gameMessage.getGame();
+                        drawChessBoard();
                         break;
                     case ERROR:
                         ErrorMessage err = gson.fromJson(message, ErrorMessage.class);
@@ -98,5 +93,17 @@ public class WSClient extends Endpoint {
 
     public void setRole(ConnectCommand.CommandType role) {
         this.role = role;
+    }
+
+    public void drawChessBoard() {
+        switch (role) {
+            case WHITE:
+            case OBSERVER:
+                boardDrawer.drawBoard(chessGame.getBoard(), ChessGame.TeamColor.WHITE);
+                break;
+            case BLACK:
+                boardDrawer.drawBoard(chessGame.getBoard(), ChessGame.TeamColor.BLACK);
+                break;
+        }
     }
 }

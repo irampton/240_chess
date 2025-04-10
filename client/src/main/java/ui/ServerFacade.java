@@ -307,4 +307,8 @@ public class ServerFacade {
         wsClient.suppressNextOutput();
     }
 
+    public void redrawBoard(){
+        wsClient.drawChessBoard();
+    }
+
 }
