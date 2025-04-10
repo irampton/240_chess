@@ -8,9 +8,11 @@ import spark.*;
 
 public class Server {
 
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
+
+        //Load websockets
+        Spark.webSocket("/ws", WSServer.class);
 
         Spark.staticFiles.location("web");
 
