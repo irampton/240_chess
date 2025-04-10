@@ -1,8 +1,10 @@
 package service;
 
-import dataaccess.GameDAO;
 import model.*;
 import org.junit.jupiter.api.*;
+import serverModel.CreateGameResponse;
+import serverModel.ErrorResponse;
+import serverModel.GameDataDTO;
 
 import java.util.List;
 import java.util.Map;

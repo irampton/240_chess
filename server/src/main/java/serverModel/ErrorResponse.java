@@ -1,4 +1,4 @@
-package model;
+package serverModel;
 
 public class ErrorResponse {
     private String error;

@@ -1,4 +1,4 @@
-package model;
+package serverModel;
 
 public class CreateGameResponse {
     private int gameID;

@@ -1,4 +1,4 @@
-package model;
+package serverModel;
 
 public class ResponseObject {
     private String message;

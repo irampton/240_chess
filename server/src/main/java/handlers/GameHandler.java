@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.*;
+import serverModel.ErrorResponse;
+import serverModel.ResponseObject;
 import service.GameService;
 import spark.Request;
 import spark.Response;
