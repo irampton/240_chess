@@ -335,6 +335,7 @@ public class ServerFacade {
 
     public void makeMove(ChessMove move, int gameID) throws Exception {
         wsClient.send(gson.toJson(new MakeMoveCommand(authToken, gameID, move), MakeMoveCommand.class));
+        wsClient.showNextOutput();
     }
 
     public void resignGame(int gameID) throws Exception {

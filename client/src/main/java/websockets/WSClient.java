@@ -54,7 +54,7 @@ public class WSClient extends Endpoint {
                     case ERROR:
                         ErrorMessage err = gson.fromJson(message, ErrorMessage.class);
                         System.out.print(SET_TEXT_COLOR_RED);
-                        System.out.println(err.getError());
+                        System.out.println("Error: " + err.getError());
                         System.out.println(RESET_TEXT_COLOR);
                         showNextOutput = true;
                         break;
