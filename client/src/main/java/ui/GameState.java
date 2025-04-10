@@ -190,7 +190,7 @@ public class GameState {
                 //currentState = State.IN_GAME;
                 break;
             case "observe":
-                //currentState = State.IN_GAME;
+                currentState = State.IN_GAME;
                 if (command.length != 2) {
                     throw new IllegalArgumentException("Invalid number of arguments. Expected 2 arguments.");
                 }
