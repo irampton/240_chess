@@ -62,16 +62,20 @@ public class WSServer {
                             }
                             break;
                     }
+                    String joinMessage = auth.getUsername() + " joined the game as ";
                     System.out.print("User: " + auth.getUsername() + " connected to game " + game.getGameName() + " as ");
                     switch (connectCommand.getType()) {
                         case BLACK:
                             System.out.print("black");
+                            joinMessage += "black";
                             break;
                         case WHITE:
                             System.out.print("white");
+                            joinMessage += "white";
                             break;
                         case OBSERVER:
                             System.out.print("an observer");
+                            joinMessage += "an observer";
                             break;
                     }
                     System.out.print("\n");
@@ -80,6 +84,8 @@ public class WSServer {
                     sessionToGameMap.put(session, connectCommand.getGameID());
 
                     session.getRemote().sendString(gson.toJson(new LoadGameMessage(game.getGame())));
+
+                    broadcastToGame(connectCommand.getGameID(), gson.toJson(new NotificationMessage(joinMessage)));
                     break;
                 case MAKE_MOVE:
                     break;
@@ -95,6 +101,7 @@ public class WSServer {
                     throw new Exception("Invalid Command");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             session.getRemote().sendString(gson.toJson(new ErrorMessage(e.getMessage())));
         }
     }

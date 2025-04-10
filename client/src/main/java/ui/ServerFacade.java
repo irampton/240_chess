@@ -294,12 +294,14 @@ public class ServerFacade {
             // We've joined the game, now let's play!
             wsClient.send(gson.toJson(new ConnectCommand(authToken, joinRequest.getGameID(), joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK)));
             wsClient.setRole(joinRequest.getPlayerColor().equalsIgnoreCase("white") ? ConnectCommand.CommandType.WHITE : ConnectCommand.CommandType.BLACK);
+            wsClient.suppressNextOutput();
         }
     }
 
     public void observeGame(int gameID) throws Exception {
         wsClient.send(gson.toJson(new ConnectCommand(authToken, gameID, ConnectCommand.CommandType.OBSERVER)));
         wsClient.setRole(ConnectCommand.CommandType.OBSERVER);
+        wsClient.suppressNextOutput();
     }
 
     public void leaveGame(int gameID) throws Exception {
