@@ -21,6 +21,7 @@ public class WSClient extends Endpoint {
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer())
             .create();
+    private Boolean suppressNextOutput = false;
 
     public static void main(String[] args) throws Exception {
         var ws = new WSClient();
@@ -60,7 +61,12 @@ public class WSClient extends Endpoint {
                         System.out.println("Unknown message from server");
                         System.out.println(RESET_TEXT_COLOR);
                 }
-                System.out.print("[IN_GAME] >>> ");
+                if(!suppressNextOutput) {
+                    System.out.print("[IN_GAME] >>> ");
+                } else {
+                    System.out.print("[LOGGED_IN] >>> ");
+                    suppressNextOutput = false;
+                }
             }
         });
     }
@@ -70,5 +76,9 @@ public class WSClient extends Endpoint {
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void suppressNextOutput() {
+        suppressNextOutput = true;
     }
 }

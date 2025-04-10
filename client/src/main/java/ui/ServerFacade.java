@@ -300,4 +300,9 @@ public class ServerFacade {
         wsClient.send(gson.toJson(new ConnectCommand(authToken, gameID, ConnectCommand.CommandType.OBSERVER)));
     }
 
+    public void leaveGame(int gameID) throws Exception {
+        wsClient.send(gson.toJson(new LeaveCommand(authToken, gameID)));
+        wsClient.suppressNextOutput();
+    }
+
 }

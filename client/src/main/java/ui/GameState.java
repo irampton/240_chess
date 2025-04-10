@@ -21,6 +21,8 @@ public class GameState {
     private ServerFacade serverFacade;
     private final DrawChessBoard boardDrawer = new DrawChessBoard();
     private List<GameData> gameList;
+    private Integer gameID;
+    private Boolean suppressNextOutput = false;
 
     public GameState() {
         currentState = State.LOGGED_OUT;
@@ -34,10 +36,14 @@ public class GameState {
                 System.out.print("[LOGGED_OUT] >>> ");
                 break;
             case LOGGED_IN:
-                System.out.print("[LOGGED_IN] >>> ");
+                if(!suppressNextOutput) {
+                    System.out.print("[LOGGED_IN] >>> ");
+                } else {
+                    suppressNextOutput = false;
+                }
                 break;
             case IN_GAME:
-                System.out.print("[IN_GAME] >>> ");
+                //System.out.print("[IN_GAME] >>> ");
                 break;
         }
         String line = scanner.nextLine();
@@ -205,7 +211,7 @@ public class GameState {
                     throw new IllegalArgumentException("Invalid game ID");
                 }
                 GameData game = gameList.get(gameNumber - 1);
-                int gameID = game.getGameID();
+                gameID = game.getGameID();
 
                 try {
                     serverFacade.observeGame(gameID);
@@ -303,7 +309,7 @@ public class GameState {
         }
 
         GameData game = gameList.get(gameNumber - 1);
-        int gameID = game.getGameID();
+        gameID = game.getGameID();
 
         ChessGame.TeamColor teamColor = command[2].equalsIgnoreCase("WHITE")
                 ? ChessGame.TeamColor.WHITE
@@ -326,8 +332,16 @@ public class GameState {
     private void inGameCommands(String[] command) {
         switch (command[0].toLowerCase()) {
             case "leave":
-                System.out.println("Leaving game");
-                currentState = State.LOGGED_IN;
+                try{
+                    serverFacade.leaveGame(gameID);
+                    currentState = State.LOGGED_IN;
+                    suppressNextOutput = true;
+                } catch (Exception e) {
+                    System.out.print(SET_TEXT_COLOR_RED);
+                    System.out.println(e.getMessage());
+                    System.out.println(RESET_TEXT_COLOR);
+                }
+
                 break;
             default:
                 System.out.println("Invalid command");

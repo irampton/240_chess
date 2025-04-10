@@ -5,27 +5,32 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
 import model.AuthData;
 import model.ChessGameDeserializer;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
-import spark.Spark;
 import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @WebSocket
 public class WSServer {
-    private AuthDAO authDAO = new AuthDAO();
-    private UserDAO userDAO = new UserDAO();
-    private GameDAO gameDAO = new GameDAO();
+    private final AuthDAO authDAO = new AuthDAO();
+    private final GameDAO gameDAO = new GameDAO();
 
-    private Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ChessGame.class, new ChessGameDeserializer())
-            .create();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(ChessGame.class, new ChessGameDeserializer()).create();
+
+    private static final Map<Integer, Set<Session>> gameSessions = new ConcurrentHashMap<>();
+    private static final Map<Session, Integer> sessionToGameMap = new ConcurrentHashMap<>();
 
     public WSServer() {
     }
@@ -70,11 +75,19 @@ public class WSServer {
                             break;
                     }
                     System.out.print("\n");
+
+                    gameSessions.computeIfAbsent(connectCommand.getGameID(), k -> new CopyOnWriteArraySet<>()).add(session);
+                    sessionToGameMap.put(session, connectCommand.getGameID());
+
                     session.getRemote().sendString(gson.toJson(new LoadGameMessage(game.getGame())));
                     break;
                 case MAKE_MOVE:
                     break;
                 case LEAVE:
+                    auth = checkAuth(command.getAuthToken());
+                    LeaveCommand leaveMsg = gson.fromJson(message, LeaveCommand.class);
+                    broadcastToGame(leaveMsg.getGameID(), gson.toJson(new NotificationMessage(auth.getUsername() + " has left the game")));
+                    removeSession(session);
                     break;
                 case RESIGN:
                     break;
@@ -98,6 +111,34 @@ public class WSServer {
             return authDAO.getAuth(authToken);
         } catch (Exception e) {
             throw new Exception("Unauthorized");
+        }
+    }
+
+    private void removeSession(Session session) {
+        // Retrieve the game id associated with this session.
+        Integer gameID = sessionToGameMap.remove(session);
+        if (gameID != null) {
+            Set<Session> sessions = gameSessions.get(gameID);
+            if (sessions != null) {
+                sessions.remove(session);
+                // Optionally remove the game entry if no one remains.
+                if (sessions.isEmpty()) {
+                    gameSessions.remove(gameID);
+                }
+            }
+        }
+    }
+
+    public void broadcastToGame(Integer gameID, String message) {
+        Set<Session> sessions = gameSessions.get(gameID);
+        if (sessions != null) {
+            for (Session s : sessions) {
+                try {
+                    s.getRemote().sendString(message);
+                } catch (Exception e) {
+                    System.err.println("Error sending to session: " + e.getMessage());
+                }
+            }
         }
     }
 }
