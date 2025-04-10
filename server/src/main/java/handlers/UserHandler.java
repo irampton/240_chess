@@ -1,8 +1,8 @@
 package handlers;
 
-import server.model.ErrorResponse;
+import servermodel.ErrorResponse;
 import model.LoginRequest;
-import server.model.ResponseObject;
+import servermodel.ResponseObject;
 import model.UserData;
 import service.UserService;
 import spark.Request;

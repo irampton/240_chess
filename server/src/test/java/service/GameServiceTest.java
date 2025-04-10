@@ -2,9 +2,9 @@ package service;
 
 import model.*;
 import org.junit.jupiter.api.*;
-import server.model.CreateGameResponse;
-import server.model.ErrorResponse;
-import server.model.GameDataDTO;
+import servermodel.CreateGameResponse;
+import servermodel.ErrorResponse;
+import servermodel.GameDataDTO;
 
 import java.util.List;
 import java.util.Map;

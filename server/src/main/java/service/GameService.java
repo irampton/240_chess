@@ -4,9 +4,9 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.DataAccessException;
 import model.*;
-import server.model.CreateGameResponse;
-import server.model.ErrorResponse;
-import server.model.GameDataDTO;
+import servermodel.CreateGameResponse;
+import servermodel.ErrorResponse;
+import servermodel.GameDataDTO;
 
 import java.util.*;
 

@@ -2,7 +2,7 @@ package service;
 
 import model.*;
 import org.junit.jupiter.api.*;
-import server.model.ErrorResponse;
+import servermodel.ErrorResponse;
 
 public class UserServiceTest {
     private UserService userService;
