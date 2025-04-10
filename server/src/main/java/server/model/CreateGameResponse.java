@@ -1,4 +1,4 @@
-package serverModel;
+package server.model;
 
 public class CreateGameResponse {
     private int gameID;
@@ -10,4 +10,3 @@ public class CreateGameResponse {
     public int getGameID() {
         return gameID;
     }
-}

@@ -5,7 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-import serverModel.ErrorResponse;
+import server.model.ErrorResponse;
 
 import java.util.Objects;
 

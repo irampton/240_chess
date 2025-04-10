@@ -1,6 +1,6 @@
 package handlers;
 
-import serverModel.ResponseObject;
+import server.model.ResponseObject;
 import service.DatabaseService;
 import spark.*;
 import com.google.gson.Gson;
