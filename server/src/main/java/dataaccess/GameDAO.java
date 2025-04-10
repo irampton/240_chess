@@ -44,13 +44,14 @@ public class GameDAO {
                 new ChessGame());
 
         try (var conn = DatabaseManager.getConnection()) {
-            String query = "INSERT INTO game_data (gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO game_data (gameName, whiteUsername, blackUsername, gameOver, game) VALUES (?, ?, ?, ?, ?)";
             try (var preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, gameName);
                 preparedStatement.setString(2, null); // White username (initially null)
                 preparedStatement.setString(3, null); // Black username (initially null)
+                preparedStatement.setString(4, "0");  // Game over, starts 0
                 String gameJson = gson.toJson(game.getGame());
-                preparedStatement.setString(4, gameJson);
+                preparedStatement.setString(5, gameJson);
                 
                 game.setGameID(getGeneratedGameID(preparedStatement));
             }
@@ -93,6 +94,7 @@ public class GameDAO {
                                 resultSet.getString("gameName"),
                                 chessGame
                         );
+                        game.setGameOver(resultSet.getBoolean("gameOver"));
                     }
                 }
             }
@@ -129,14 +131,15 @@ public class GameDAO {
 
     public void updateGame(GameData game) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            String query = "UPDATE game_data SET gameName = ?, whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?";
+            String query = "UPDATE game_data SET gameName = ?, whiteUsername = ?, blackUsername = ?, gameOver = ?, game = ? WHERE gameID = ?";
             try (var preparedStatement = conn.prepareStatement(query)) {
                 preparedStatement.setString(1, game.getGameName());
                 preparedStatement.setString(2, game.getWhiteUsername());
                 preparedStatement.setString(3, game.getBlackUsername());
+                preparedStatement.setString(4, game.getGameOver() ? "1" : "0");
                 String gameJson = gson.toJson(game.getGame());
-                preparedStatement.setString(4, gameJson);
-                preparedStatement.setInt(5, game.getGameID());
+                preparedStatement.setString(5, gameJson);
+                preparedStatement.setInt(6, game.getGameID());
 
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected == 0) {

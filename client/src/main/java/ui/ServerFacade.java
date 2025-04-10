@@ -134,6 +134,11 @@ public class ServerFacade {
             }
             throw new Exception("Error logging in");
         }
+        try {
+            wsClient = new WSClient();
+        } catch (Exception e) {
+            //fail silently
+        }
     }
 
     private void getAuthToken(HttpURLConnection http) throws IOException {
@@ -325,7 +330,6 @@ public class ServerFacade {
 
     public void makeMove(ChessMove move, int gameID) throws Exception {
         wsClient.send(gson.toJson(new MakeMoveCommand(authToken, gameID, move), MakeMoveCommand.class));
-        wsClient.showNextOutput();
     }
 
     public void resignGame(int gameID) throws Exception {

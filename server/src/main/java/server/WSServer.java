@@ -105,13 +105,36 @@ public class WSServer {
                     ChessMove playerMove = moveCommand.getMove();
 
                     game.getGame().makeMove(playerMove);
+                    boolean checkmate = game.getGame().isInCheckmate(game.getGame().getTeamTurn());
+                    boolean check = game.getGame().isInCheck(game.getGame().getTeamTurn());
+                    boolean stalemate = game.getGame().isInStalemate(game.getGame().getTeamTurn());
+                    if (checkmate || stalemate) {
+                        game.setGameOver(true);
+                    }
                     saveGameData(game);
+
                     broadcastToGame(moveCommand.getGameID(), gson.toJson(new LoadGameMessage(game.getGame())));
+
                     String moveMessage = playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black";
                     moveMessage += " moved from " + friendlyPosition(playerMove.getStartPosition())
                             + " to " + friendlyPosition(playerMove.getEndPosition());
+                    String checkMessage = "";
+                    if(checkmate){
+                        checkMessage += (game.getGame().getTeamTurn()== ChessGame.TeamColor.WHITE ? "White" : "Black")
+                                + " is in checkmate - Game Over\n"
+                                + (playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black")
+                                + " wins!";
+                    } else if(stalemate){
+                        checkMessage += "Stalemate - Game Over";
+                    }else if(check){
+                        checkMessage += (game.getGame().getTeamTurn()== ChessGame.TeamColor.WHITE ? "White" : "Black")
+                                + " is in check";
+                    }
+                    moveMessage += "\n" + checkMessage;
+
                     broadcastToOtherInGame(moveCommand.getGameID(), session,
                             gson.toJson(new NotificationMessage(moveMessage)));
+                    session.getRemote().sendString(gson.toJson(new NotificationMessage(checkMessage)));
                     break;
                 case LEAVE:
                     auth = checkAuth(command.getAuthToken());
@@ -130,7 +153,7 @@ public class WSServer {
 
                     broadcastToGame(command.getGameID(),
                             gson.toJson(new NotificationMessage(auth.getUsername() + "("
-                                   + (playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black")
+                                    + (playerColor == ChessGame.TeamColor.WHITE ? "white" : "black")
                                     + ") has resigned")));
                     break;
                 default:
@@ -168,7 +191,7 @@ public class WSServer {
         } else if (auth.getUsername().equalsIgnoreCase(game.getBlackUsername())) {
             playerColor = ChessGame.TeamColor.BLACK;
         } else {
-            throw new Exception("You cannon make a move. You are not a player in this game.");
+            throw new Exception("You cannot make a move. You are not a player in this game.");
         }
 
         if (playerColor != game.getGame().getTeamTurn()) {

@@ -365,7 +365,7 @@ public class GameState {
                     throw new IllegalArgumentException("Invalid command");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             System.out.print(SET_TEXT_COLOR_RED);
             System.out.println(e.getMessage());
             System.out.println(RESET_TEXT_COLOR);

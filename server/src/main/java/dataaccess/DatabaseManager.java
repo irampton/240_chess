@@ -88,6 +88,7 @@ public class DatabaseManager {
                     "    whiteUsername VARCHAR(255),\n" +
                     "    blackUsername VARCHAR(255),\n" +
                     "    gameName VARCHAR(255) NOT NULL,\n" +
+                    "    gameOver TINYINT(1),\n" +
                     "    game TEXT NOT NULL\n" +
                     ");\n")) {
                 var rs = preparedStatement.executeUpdate();

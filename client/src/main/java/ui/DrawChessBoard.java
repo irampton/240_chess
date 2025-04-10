@@ -18,7 +18,7 @@ public class DrawChessBoard {
             for (int column = 1; column <= 8; column++) {
                 ChessPosition pos = new ChessPosition(
                         teamColor == ChessGame.TeamColor.WHITE ? (9 - row) : row,
-                        column);
+                        teamColor == ChessGame.TeamColor.BLACK ? (9 - column) : column);
                 boolean legalMove = legalMoves.contains(pos);
 
                 // Background color
